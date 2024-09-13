@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchBar } from "@/app/components/search-bar";
 import { TypeFilter } from "@/app/components/type-filter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -23,29 +23,25 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const updateUrlParams = useCallback((newParams: Record<string, string>) => {
-    const params = new URLSearchParams(searchParams);
-    Object.entries(newParams).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
-    });
-    params.set('page', '1');
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [searchParams, router]);
-
-  const debouncedSearch = useCallback(
-    debounce((value: string) => {
-      updateUrlParams({ search: value });
+  const debouncedUpdateUrlParams = useCallback(
+    debounce((newParams: Record<string, string>) => {
+      const params = new URLSearchParams(searchParams);
+      Object.entries(newParams).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      });
+      params.set('page', '1');
+      router.push(`?${params.toString()}`, { scroll: false });
     }, 300),
-    [updateUrlParams]
+    [searchParams, router]
   );
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    debouncedSearch(value);
+    debouncedUpdateUrlParams({ search: value });
     onSearch(value);
   };
 
