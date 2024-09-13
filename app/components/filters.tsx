@@ -44,13 +44,12 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
     debouncedUpdateUrlParams({ search: value });
     onSearch(value);
   };
-
-  const handleTypeFilterChange = (value: string) => updateUrlParams({ type: value });
-  const handlePublishedFilterChange = (value: string) => updateUrlParams({ published: value });
-  const handleSortByChange = (value: string) => updateUrlParams({ sortBy: value });
+  const handleTypeFilterChange = (value: string) => debouncedUpdateUrlParams({ type: value });
+  const handlePublishedFilterChange = (value: string) => debouncedUpdateUrlParams({ published: value });
+  const handleSortByChange = (value: string) => debouncedUpdateUrlParams({ sortBy: value });
   const handleSortOrderChange = () => {
     const currentOrder = searchParams.get('sortOrder') || 'desc';
-    updateUrlParams({ sortOrder: currentOrder === 'asc' ? 'desc' : 'asc' });
+    debouncedUpdateUrlParams({ sortOrder: currentOrder === 'asc' ? 'desc' : 'asc' });
   };
 
   const handleUploadComplete = () => {
