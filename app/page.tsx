@@ -7,13 +7,13 @@ import { useTheme } from 'next-themes'
 import Image from 'next/image'
 
 const icons = [
-  { name: "eye1", src: "/eye1.png" },
-  { name: "eye2", src: "/eye2.png" },
-  { name: "eye3", src: "/eye3.png" },
-  { name: "eye4", src: "/eye4.png" },
-  { name: "ear1", src: "/ear1.png" },
-  { name: "ear2", src: "/ear2.png" },
-  { name: "ear3", src: "/ear3.png" },
+  { name: "eye", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355897/Homepage/eye1_egafgx.png" },
+  { name: "ball", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355896/Homepage/eye2_aet7gu.png" },
+  { name: "nose", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355896/Homepage/eye3_crxuia.png" },
+  { name: "mouth", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355896/Homepage/eye4_poyhnz.png" },
+  { name: "ear", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355893/Homepage/ear2_dze9j8.png" },
+  { name: "ear-nose", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355893/Homepage/ear2_dze9j8.png" },
+  { name: "ear-face", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355893/Homepage/ear3_udrhng.png" },
 ];
 
 export default function SensoryExperienceLanding() {
@@ -91,17 +91,17 @@ export default function SensoryExperienceLanding() {
                     const baseSize = Math.min(windowSize.width, windowSize.height) * (windowSize.width < 768 ? 0.2 : 0.3);
                     if (item.type === 'ear') {
                       switch (icon.name) {
-                        case 'ear1':
+                        case 'ear':
                           position = { top: '10%', left: '10%' };
                           size = baseSize * 0.9;
                           zIndex = 3;
                           break;
-                        case 'ear2':
+                        case 'ear-nose':
                           position = { top: '5%', left: '30%' };
                           size = baseSize * 0.95;
                           zIndex = 2;
                           break;
-                        case 'ear3':
+                        case 'ear-face':
                           position = { bottom: '10%', right: '5%' };
                           size = baseSize * 1;
                           zIndex = 1;
@@ -109,22 +109,22 @@ export default function SensoryExperienceLanding() {
                       }
                     } else { // eye
                       switch (icon.name) {
-                        case 'eye1':
+                        case 'eye':
                           position = { top: '20%', right: '30%' };
                           size = baseSize * 1;
                           zIndex = 3;
                           break;
-                        case 'eye2':
+                        case 'eye-ball':
                           position = { top: '45%', right: '20%' };
                           size = baseSize * 0.15;
                           zIndex = 4;
                           break;
-                        case 'eye3':
+                        case 'eye-nose':
                           position = { top: '15%', right: '20%' };
                           size = baseSize * 0.31;
                           zIndex = 2;
                           break;
-                        case 'eye4':
+                        case 'eye-mouth':
                           position = { bottom: '10%', left: '15%' };
                           size = baseSize * 0.95;
                           zIndex = 1;
