@@ -7,13 +7,13 @@ import { useTheme } from 'next-themes'
 import Image from 'next/image'
 
 const icons = [
-  { name: "eye", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355897/Homepage/eye1_egafgx.png" },
-  { name: "ball", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355896/Homepage/eye2_aet7gu.png" },
-  { name: "nose", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355896/Homepage/eye3_crxuia.png" },
-  { name: "mouth", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355896/Homepage/eye4_poyhnz.png" },
-  { name: "ear", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355893/Homepage/ear2_dze9j8.png" },
-  { name: "ear-nose", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355893/Homepage/ear2_dze9j8.png" },
-  { name: "ear-face", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726355893/Homepage/ear3_udrhng.png" },
+  { name: "eye", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/c_scale,h_0.50,w_0.50/v1726355897/Homepage/eye1_egafgx.png" },
+  { name: "eye-ball", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/c_scale,h_0.50,w_0.50/v1726355896/Homepage/eye2_aet7gu.png" },
+  { name: "eye-nose", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/c_scale,h_0.50,w_0.50/v1726355896/Homepage/eye3_crxuia.png" },
+  { name: "eye-mouth", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/c_scale,h_0.50,w_0.50/v1726355896/Homepage/eye4_poyhnz.png" },
+  { name: "ear", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/c_scale,h_0.50,w_0.50/v1726355893/Homepage/ear1_ld6ljw.png" },
+  { name: "ear-nose", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/c_scale,h_0.50,w_0.50/v1726355893/Homepage/ear2_dze9j8.png" },
+  { name: "ear-face", src: "https://res.cloudinary.com/dsbsn3nap/image/upload/c_scale,h_0.50,w_0.50/v1726355893/Homepage/ear3_udrhng.png" },
 ];
 
 export default function SensoryExperienceLanding() {
