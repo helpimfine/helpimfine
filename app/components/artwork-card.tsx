@@ -75,7 +75,7 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           style={{ objectFit: 'cover' }}
           placeholder="blur"
-          blurDataURL={artwork.imageUrl || `${(artwork.imageUrl ?? "/placeholder.png").replace('/upload/', '/upload/c_scale,h_10,w_10/')}`}
+          blurDataURL={artwork.imageUrl || `${(artwork.imageUrl ?? "/placeholder.png").replace('/upload/', '/upload/c_scale,h_100,w_100/')}`}
         />   
         {editMode && (
           <Badge 

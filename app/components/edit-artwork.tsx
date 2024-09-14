@@ -221,7 +221,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
               </div>
               <div className="flex-grow">
                 <div className="flex items-center mb-2">
-                  <Label htmlFor="published" className="mr-2 font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>PUBLISHED</Label>
+                  <Label htmlFor="published" className="mr-2 font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>PUBLISHED</Label>
                   <Switch
                     id="published"
                     name="published"
@@ -230,7 +230,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="type" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>TYPE</Label>
+                  <Label htmlFor="type" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>TYPE</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, type: value as "human" | "ai" }))}
@@ -249,7 +249,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
 
             {formData.type === 'ai' && (
               <div className="space-y-1 pt-4">
-                <Label htmlFor="parentId" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>PARENT ARTWORK</Label>
+                <Label htmlFor="parentId" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>PARENT ARTWORK</Label>
                 <Select
                   value={formData.parentId || "none"}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, parentId: value === "none" ? null : value }))}
@@ -270,7 +270,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
             )}
 
             <div className="space-y-1 pt-4">
-              <Label htmlFor="description" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>DESCRIPTION</Label>
+              <Label htmlFor="description" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>DESCRIPTION</Label>
               <Textarea
                 id="description"
                 name="description"
@@ -289,7 +289,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
             </div>
 
             <div className="space-y-1 pt-4">
-              <Label htmlFor="imageUrl" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>IMAGE URL</Label>
+              <Label htmlFor="imageUrl" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>IMAGE URL</Label>
               <Input
                 id="imageUrl"
                 type="text"
@@ -303,7 +303,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
             </div>
 
             <div className="space-y-1 pt-4">
-              <Label htmlFor="accessibilityDescription" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>ACCESSIBILITY DESCRIPTION</Label>
+              <Label htmlFor="accessibilityDescription" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>ACCESSIBILITY DESCRIPTION</Label>
               <Textarea
                 id="accessibilityDescription"
                 name="accessibilityDescription"
@@ -322,7 +322,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
             </div>
 
             <div className="space-y-1 pt-4">
-              <Label htmlFor="mainObjects" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>MAIN OBJECTS</Label>
+              <Label htmlFor="mainObjects" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>MAIN OBJECTS</Label>
               <Input 
                 id="mainObjects"
                 onKeyDown={(e) => handleKeyPress(e, 'mainObjects')}
@@ -348,7 +348,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
             </div>
 
             <div className="space-y-1 pt-4">
-              <Label htmlFor="tags" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>TAGS</Label>
+              <Label htmlFor="tags" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>TAGS</Label>
               <Input 
                 id="tags"
                 onKeyDown={(e) => handleKeyPress(e, 'tags')}
@@ -374,7 +374,7 @@ export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtwor
             </div>
 
             <div className="space-y-1 pt-4">
-              <Label htmlFor="emotions" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>EMOTIONS</Label>
+              <Label htmlFor="emotions" className="font-semibold text-md text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>EMOTIONS</Label>
               <Input 
                 id="emotions"
                 onKeyDown={(e) => handleKeyPress(e, 'emotions')}
