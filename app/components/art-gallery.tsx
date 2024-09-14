@@ -8,6 +8,7 @@ import { Filters } from "@/app/components/filters";
 import { ArtworkGridSkeleton } from "@/app/components/artwork-skeleton";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useEffect, useState, useCallback } from "react";
+import { cn } from "@/lib/utils";
 
 interface ArtGalleryProps {
   initialArtworks: SelectArt[];
@@ -44,6 +45,19 @@ export function ArtGallery({ initialArtworks, initialTotalPages, editMode }: Art
     fetchArtworks();
   }, [fetchArtworks]);
 
+  // Add this new effect to listen for the custom event
+  useEffect(() => {
+    const handleArtworkUpdate = () => {
+      fetchArtworks();
+    };
+
+    window.addEventListener('artworkUpdated', handleArtworkUpdate);
+
+    return () => {
+      window.removeEventListener('artworkUpdated', handleArtworkUpdate);
+    };
+  }, [fetchArtworks]);
+
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', page.toString());
@@ -75,36 +89,30 @@ export function ArtGallery({ initialArtworks, initialTotalPages, editMode }: Art
       startPage = Math.max(endPage - maxVisiblePages + 1, 1);
     }
 
+    const renderPageLink = (page: number, content: React.ReactNode) => (
+      <PaginationItem key={page}>
+        <PaginationLink
+          onClick={() => handlePageChange(page)}
+          isActive={page === currentPage}
+          className={cn(page !== currentPage && "cursor-pointer")}
+        >
+          {content}
+        </PaginationLink>
+      </PaginationItem>
+    );
+
     if (startPage > 1) {
-      items.push(
-        <PaginationItem key="first">
-          <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
-        </PaginationItem>
-      );
-      if (startPage > 2) {
-        items.push(<PaginationEllipsis key="ellipsis-start" />);
-      }
+      items.push(renderPageLink(1, 1));
+      if (startPage > 2) items.push(<PaginationEllipsis key="ellipsis-start" />);
     }
 
     for (let i = startPage; i <= endPage; i++) {
-      items.push(
-        <PaginationItem key={i}>
-          <PaginationLink isActive={i === currentPage} onClick={() => handlePageChange(i)}>
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
+      items.push(renderPageLink(i, i));
     }
 
     if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        items.push(<PaginationEllipsis key="ellipsis-end" />);
-      }
-      items.push(
-        <PaginationItem key="last">
-          <PaginationLink onClick={() => handlePageChange(totalPages)}>{totalPages}</PaginationLink>
-        </PaginationItem>
-      );
+      if (endPage < totalPages - 1) items.push(<PaginationEllipsis key="ellipsis-end" />);
+      items.push(renderPageLink(totalPages, totalPages));
     }
 
     return items;
@@ -129,15 +137,19 @@ export function ArtGallery({ initialArtworks, initialTotalPages, editMode }: Art
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious 
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  className={currentPage === 1 ? 'opacity-50' : 'cursor-pointer'}
+                  onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                  className={cn(
+                    currentPage > 1 ? "cursor-pointer" : "opacity-50 pointer-events-none"
+                  )}
                 />
               </PaginationItem>
               {renderPaginationItems()}
               <PaginationItem>
                 <PaginationNext 
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  className={currentPage === totalPages ? 'opacity-50' : 'cursor-pointer'}
+                  onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                  className={cn(
+                    currentPage < totalPages ? "cursor-pointer" : "opacity-50 pointer-events-none"
+                  )}
                 />
               </PaginationItem>
             </PaginationContent>

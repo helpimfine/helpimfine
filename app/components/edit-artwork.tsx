@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { generateColorTones, computeTextColor } from "@/utils/color-utils";
 import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -21,9 +20,10 @@ interface EditArtworkProps {
   artwork: SelectArt;
   onClose: () => void;
   onSubmit: (updatedArtwork: Partial<InsertArt>) => Promise<void>;
+  onDelete: () => void;
 }
 
-export function EditArtwork({ artwork, onClose, onSubmit }: EditArtworkProps) {
+export function EditArtwork({ artwork, onClose, onSubmit, onDelete }: EditArtworkProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<Partial<InsertArt>>({
     title: artwork.title || "",
@@ -105,7 +105,8 @@ export function EditArtwork({ artwork, onClose, onSubmit }: EditArtworkProps) {
       if (result.status === "success") {
         await onSubmit(submissionData);
         onClose();
-        router.refresh(); // Refresh the current page
+        // Dispatch custom event
+        window.dispatchEvent(new Event('artworkUpdated'));
       } else {
         console.error("Failed to update artwork:", result.message);
       }
@@ -118,9 +119,10 @@ export function EditArtwork({ artwork, onClose, onSubmit }: EditArtworkProps) {
     if (artwork.id && confirmDelete === formData.title) {
       const result = await deleteArtworkAction(artwork.id);
       if (result.status === "success") {
+        onDelete();
         onClose();
-        router.push('/art/edit');
-        router.refresh(); // Force a refresh of the page data
+        // Dispatch custom event
+        window.dispatchEvent(new Event('artworkUpdated'));
       } else {
         console.error("Failed to delete artwork:", result.message);
       }
@@ -191,8 +193,18 @@ export function EditArtwork({ artwork, onClose, onSubmit }: EditArtworkProps) {
 
   return (
     <Card className="w-full h-[80vh] overflow-hidden border-none backdrop-blur-xl" style={{ background: `${colorTones[1][6]}80` }}>
-             <Badge className="ml-6 mt-6 uppercase" variant="outline" style={{ color: colorTones[1][3], borderColor: colorTones[1][3] }}>{artwork.type}</Badge>
-             <CardHeader>
+      <CardHeader>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleInputChange}
+          placeholder="Artwork Title"
+          className="mb-2 text-5xl font-bold w-full bg-transparent border-none outline-none font-bebas-neue"
+          required
+          style={{ color: colorTones[1][3] }}
+        />
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[calc(80vh-12rem)]">
@@ -208,19 +220,7 @@ export function EditArtwork({ artwork, onClose, onSubmit }: EditArtworkProps) {
                 />
               </div>
               <div className="flex-grow">
-                <Label htmlFor="title" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>TITLE</Label>
-                <input
-                  id="title"
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="Artwork Title"
-                  className="mb-2 text-3xl font-bold w-full bg-transparent border-none outline-none"
-                  required
-                  style={{ color: colorTones[1][3] }}
-                />
-                <div className="flex items-center">
+                <div className="flex items-center mb-2">
                   <Label htmlFor="published" className="mr-2 font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>PUBLISHED</Label>
                   <Switch
                     id="published"
@@ -229,23 +229,22 @@ export function EditArtwork({ artwork, onClose, onSubmit }: EditArtworkProps) {
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
                   />
                 </div>
+                <div className="space-y-1">
+                  <Label htmlFor="type" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>TYPE</Label>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, type: value as "human" | "ai" }))}
+                  >
+                    <SelectTrigger id="type" className="w-full border-none bg-transparent" style={{ color: colorTones[1][2] }}>
+                      <SelectValue placeholder="Select artwork type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="human">Human</SelectItem>
+                      <SelectItem value="ai">AI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
-
-            <div className="space-y-1 pt-4">
-              <Label htmlFor="type" className="font-semibold text-xs text-muted-foreground uppercase" style={{ color: colorTones[1][4] }}>TYPE</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, type: value as "human" | "ai" }))}
-              >
-                <SelectTrigger id="type" className="w-full border-none bg-transparent" style={{ color: colorTones[1][2] }}>
-                  <SelectValue placeholder="Select artwork type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="human">Human</SelectItem>
-                  <SelectItem value="ai">AI</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             {formData.type === 'ai' && (

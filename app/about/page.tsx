@@ -70,7 +70,7 @@ export default function AboutPage() {
               About
             </h1>
             <p className="text-lg md:text-2xl leading-relaxed text-secondary-foreground max-w-3xl text-pretty">
-              I&apos;m Thomas, a visual artist exploring the intersection of <span className="font-semibold text-primary font-bebas-neue text-2xl md:text-3xl">digital collage</span> and <span className="font-semibold text-primary font-bebas-neue text-2xl md:text-3xl">artificial intelligence</span>. My creative process is built around two key steps:
+              Help, I&apos;m fine. is a project exploring the intersection of <span className="font-semibold text-primary font-bebas-neue text-2xl md:text-3xl">digital collage</span> and <span className="font-semibold text-primary font-bebas-neue text-2xl md:text-3xl">artificial intelligence</span>. My creative process is built around two key steps:
             </p>
           </motion.div>
 

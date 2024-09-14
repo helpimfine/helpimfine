@@ -6,6 +6,13 @@ import { SelectArt, artworksTable, InsertArt } from "../schema/artworks-schema";
 import { cache } from 'react';
 import { asc, desc } from 'drizzle-orm';
 
+const SORTABLE_COLUMNS = [
+  'id', 'title', 'type', 'description', 'imageUrl', 'accessibilityDescription',
+  'published', 'created', 'updatedAt'
+] as const;
+
+type SortableColumns = typeof SORTABLE_COLUMNS[number];
+
 type GetArtworksParams = {
   page: number;
   pageSize: number;
@@ -13,7 +20,7 @@ type GetArtworksParams = {
   type: "all" | "human" | "ai";
   published: "all" | "published" | "unpublished";
   sortOrder: 'asc' | 'desc';
-  sortBy: 'created' | 'title';
+  sortBy: SortableColumns;
   isAuthenticated: boolean;
 };
 
@@ -58,11 +65,13 @@ export const getArtworks = cache(async ({
 
   const total = Number(count);
 
+  const orderByClause = sql`${artworksTable[sortBy]} ${sql.raw(sortOrder.toUpperCase())}`;
+
   const data = await db
     .select()
     .from(artworksTable)
     .where(whereClause)
-    .orderBy(sortOrder === 'asc' ? asc(artworksTable[sortBy]) : desc(artworksTable[sortBy]))
+    .orderBy(orderByClause)
     .limit(pageSize)
     .offset((page - 1) * pageSize);
 

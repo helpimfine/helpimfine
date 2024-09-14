@@ -61,6 +61,7 @@ export default function ArtworkDetails({ artwork }: ArtworkDetailsProps) {
         artwork={artwork}
         onClose={() => setIsEditing(false)}
         onSubmit={handleUpdateArtwork}
+        onDelete={() => router.push('/art/edit')}
       />
     );
   }

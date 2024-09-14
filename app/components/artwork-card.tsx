@@ -1,17 +1,17 @@
 import { artworksTable, SelectArt, InsertArt } from "@/db/schema/artworks-schema";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import Image from 'next/image';
 import { generateColorTones } from "@/utils/color-utils"; 
 import { MagicCard } from "@/components/ui/magic-card";
 import { Badge } from "@/components/ui/badge";
 import { useCardSize } from "@/app/hooks/useCardSize";
-import { useState } from 'react';
 import { EditArtwork } from "@/app/components/edit-artwork";
 import { useRouter } from "next/navigation";
 import { updateArtworkAction } from "@/actions/artworks-actions";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { useState, useCallback } from 'react';
 
 interface Colour {
   hex: string;
@@ -25,7 +25,7 @@ interface ArtworkCardProps {
 }
 
 export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
   const { getTypographySize } = useCardSize(cardSize);
 
@@ -35,10 +35,6 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
     ? colours[1]?.hex || defaultColor
     : defaultColor;
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
   const handleUpdateArtwork = async (updatedArtwork: Partial<InsertArt>) => {
     if (!artwork.id) {
       console.error("Artwork ID is missing");
@@ -46,22 +42,22 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
     }
     const result = await updateArtworkAction(artwork.id, updatedArtwork);
     if (result.status === "success") {
-      setIsEditing(false);
-      router.refresh(); // Refresh the page to show updated data
+      setIsDialogOpen(false);
+      router.refresh(); // Refresh the page
     } else {
       console.error("Failed to update artwork:", result.message);
     }
   };
 
-  if (isEditing) {
-    return (
-      <EditArtwork
-        artwork={artwork}
-        onClose={() => setIsEditing(false)}
-        onSubmit={handleUpdateArtwork}
-      />
-    );
-  }
+  const handleCloseDialog = useCallback(() => {
+    setIsDialogOpen(false);
+  }, []);
+
+  const handleDeleteArtwork = useCallback(() => {
+    setIsDialogOpen(false);
+    router.push('/art/edit');
+    router.refresh(); // Refresh the page after redirecting
+  }, [router]);
 
   return (
     <MagicCard 
@@ -71,7 +67,6 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
       gradientTransparency={40}
       style={{ width: `${cardSize.width}px`, height: `${cardSize.height}px` }}
     >
-    
       <div className="aspect-square relative">
         <Image
           src={artwork.imageUrl ?? '/placeholder.png'}
@@ -80,9 +75,9 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           style={{ objectFit: 'cover' }}
           placeholder="blur"
-
-          blurDataURL={artwork.imageUrl || `${(artwork.imageUrl ?? "/placeholder.png").replace('/upload/', '/upload/c_scale,h_10,w_10/')}`}/>   
-              {editMode && (
+          blurDataURL={artwork.imageUrl || `${(artwork.imageUrl ?? "/placeholder.png").replace('/upload/', '/upload/c_scale,h_10,w_10/')}`}
+        />   
+        {editMode && (
           <Badge 
             className="absolute top-4 left-4 z-10" 
             variant={artwork.published ? "default" : "secondary"}
@@ -99,7 +94,6 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
       </div>
 
       <CardContent className="absolute bottom-0 border-none left-0 right-0 p-4 hover:border-none flex flex-col items-start">
-
         {artwork.type && (
           <Badge 
             className="uppercase mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
@@ -127,16 +121,21 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
       </CardContent>
       {editMode && (
         <CardFooter className="absolute top-0 right-0 p-2" onClick={(e) => e.preventDefault()}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
               <Button variant="ghost" size="icon" className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <MoreVertical className="h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={handleEdit}>Edit</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </DialogTrigger>
+            <DialogContent className="p-0 border-none bg-transparent">
+              <EditArtwork
+                artwork={artwork}
+                onSubmit={handleUpdateArtwork}
+                onClose={handleCloseDialog}
+                onDelete={handleDeleteArtwork}
+              />
+            </DialogContent>
+          </Dialog>
         </CardFooter>
       )}
     </MagicCard>
