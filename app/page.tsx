@@ -1,83 +1,184 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
+import { motion, useAnimation } from "framer-motion"
 import { Eye, Ear } from "lucide-react"
-import { MagicCard } from "@/components/ui/magic-card"
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 
+const icons = [
+  { name: "eye1", src: "/eye1.png" },
+  { name: "eye2", src: "/eye2.png" },
+  { name: "eye3", src: "/eye3.png" },
+  { name: "eye4", src: "/eye4.png" },
+  { name: "ear1", src: "/ear1.png" },
+  { name: "ear2", src: "/ear2.png" },
+  { name: "ear3", src: "/ear3.png" },
+];
+
 export default function SensoryExperienceLanding() {
   const { theme } = useTheme()
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const controls = useAnimation()
 
-  const isDarkTheme = theme === 'dark'
-
-  const cardVariants = {
-    hover: {
-      y: -5,
-      transition: { type: "spring", stiffness: 300 }
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     }
-  }
+    
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    controls.start(i => ({
+      x: Math.random() * 30 - 15,
+      y: Math.random() * 30 - 15,
+      rotate: Math.random() * 10 - 5,
+      transition: { repeat: Infinity, repeatType: "reverse", duration: 3 + i * 0.5 }
+    }))
+  }, [controls])
+
+  const handleMouseEnter = useCallback(() => {
+    controls.start(i => ({
+      scale: 1.2,
+      rotate: Math.random() * 20 - 10,
+      transition: { type: "spring", stiffness: 300, damping: 10 }
+    }))
+  }, [controls])
+
+  const handleMouseLeave = useCallback(() => {
+    controls.start(i => ({
+      scale: 1,
+      rotate: 0,
+      transition: { type: "spring", stiffness: 300, damping: 20 }
+    }))
+  }, [controls])
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <Image
-        src="https://res.cloudinary.com/dsbsn3nap/image/upload/v1726000825/Lushuous_Landscape_ghgau1.png"
-        alt="Background"
-        fill
-        style={{ objectFit: "cover" }}
-        className="z-0"
-      />
-      <header className="px-4 lg:px-6 h-14 flex items-center border-b border-border relative z-10">
-        <Link className="flex items-center justify-center" href="#">
-          <span className="sr-only">Sensory Experience</span>
-          <Eye className="h-6 w-6 text-foreground mr-2" />
-          <Ear className="h-6 w-6 text-foreground" />
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:text-accent transition-colors" href="#about">
-            About
-          </Link>
-          <Link className="text-sm font-medium hover:text-accent transition-colors" href="#contact">
-            Contact
-          </Link>
-        </nav>
-      </header>
-      <main className="flex-1 flex items-center justify-center relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-background to-accent/10"></div>
-        <section className="relative z-10 w-full py-8 md:py-12 lg:py-16">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
-              {[
-                { title: "Eyes", icon: Eye, href: "/art" },
-                { title: "Ears", icon: Ear, href: "/audio" }
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  className="w-full max-w-[200px]"
-                  whileHover="hover"
-                  variants={cardVariants}
-                >
-                  <Link href={item.href}>
-                    <MagicCard
-                      className="group relative overflow-hidden rounded-2xl shadow-2xl transition-all duration-300 aspect-square bg-opacity-50 backdrop-filter backdrop-blur-xl"
-                      gradientColor='foreground'
-                      gradientSize={200}
-                      gradientOpacity={0.8}
-                    >
-                      <div className="relative p-4 flex flex-col items-center justify-center h-full backdrop-blur-xl">
-                        <item.icon className="h-12 w-12 mb-2" />
-                        <h2 className="text-2xl font-bold">{item.title}</h2>
-                      </div>
-                    </MagicCard>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+    <div className="flex flex-col h-screen overflow-hidden bg-background text-foreground">
+      <div className="flex-1 flex flex-col md:flex-row">
+        {[
+          { title: "Eyes", icon: Eye, href: "/art", type: "eye", bgColor: "#A5CFC7" },
+          { title: "Ears", icon: Ear, href: "/audio", type: "ear", bgColor: "#B55D44" }
+        ].map((item, index) => (
+          <div 
+            key={index} 
+            className="flex-1 relative overflow-hidden" 
+            style={{ backgroundColor: item.bgColor }}
+          >
+            <Link 
+              href={item.href} 
+              className={`absolute inset-0 z-10 flex flex-col items-center justify-center p-6 md:p-10
+                ${item.type === 'eye' ? 'md:pt-20 md:pb-20 pt-20 pb-6' : 'md:pt-20 md:pb-20 pt-6 pb-20'}
+                group cursor-pointer`}
+            >
+              <motion.h2 
+                className="text-3xl md:text-6xl font-bold mb-4 md:mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {item.title}
+              </motion.h2>
+              <div className="relative flex-1 w-full max-w-[80%] max-h-[60%] md:max-w-[70%] md:max-h-[70%]">
+                {icons
+                  .filter((icon) => icon.name.startsWith(item.type))
+                  .map((icon, i) => {
+                    let position, size, zIndex;
+                    const baseSize = Math.min(windowSize.width, windowSize.height) * (windowSize.width < 768 ? 0.2 : 0.3);
+                    if (item.type === 'ear') {
+                      switch (icon.name) {
+                        case 'ear1':
+                          position = { top: '10%', left: '10%' };
+                          size = baseSize * 0.9;
+                          zIndex = 3;
+                          break;
+                        case 'ear2':
+                          position = { top: '5%', left: '30%' };
+                          size = baseSize * 0.95;
+                          zIndex = 2;
+                          break;
+                        case 'ear3':
+                          position = { bottom: '10%', right: '5%' };
+                          size = baseSize * 1;
+                          zIndex = 1;
+                          break;
+                      }
+                    } else { // eye
+                      switch (icon.name) {
+                        case 'eye1':
+                          position = { top: '20%', right: '30%' };
+                          size = baseSize * 1;
+                          zIndex = 3;
+                          break;
+                        case 'eye2':
+                          position = { top: '45%', right: '20%' };
+                          size = baseSize * 0.15;
+                          zIndex = 4;
+                          break;
+                        case 'eye3':
+                          position = { top: '15%', right: '20%' };
+                          size = baseSize * 0.31;
+                          zIndex = 2;
+                          break;
+                        case 'eye4':
+                          position = { bottom: '10%', left: '15%' };
+                          size = baseSize * 0.95;
+                          zIndex = 1;
+                          break;
+                      }
+                    }
+
+                    return (
+                      <motion.div
+                        key={icon.name}
+                        className="absolute cursor-pointer"
+                        style={{ ...position, zIndex }}
+                        animate={controls}
+                        custom={i}
+                        whileHover={{
+                          scale: 1.3,
+                          rotate: Math.random() * 30 - 15,
+                          transition: { type: "spring", stiffness: 300, damping: 10 }
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        drag
+                        dragConstraints={{
+                          top: -50,
+                          left: -50,
+                          right: 50,
+                          bottom: 50,
+                        }}
+                        dragElastic={0.5}
+                      >
+                        <Image 
+                          src={icon.src} 
+                          alt={icon.name} 
+                          width={size}
+                          height={size}
+                          className="w-auto h-auto md:w-full md:h-full pointer-events-none"
+                        />
+                      </motion.div>
+                    );
+                  })}
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.2, rotate: 360 }}
+                whileTap={{ scale: 0.8 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="mt-4 md:mt-8"
+              >
+                <item.icon className="h-8 w-8 md:h-16 md:w-16" />
+              </motion.div>
+            </Link>
           </div>
-        </section>
-      </main>
+        ))}
+      </div>
     </div>
   )
 }
