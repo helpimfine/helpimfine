@@ -1,7 +1,7 @@
 'use client'
 
 import { SelectArt, InsertArt } from "@/db/schema/artworks-schema";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,18 +13,22 @@ import { MoreVertical, Trash2 } from "lucide-react";
 import { EditArtwork } from "@/app/components/edit-artwork";
 import { updateArtworkAction } from "@/actions/artworks-actions";
 import { createClient } from "@/utils/supabase/client";
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { Play, Pause } from "lucide-react";
 
 interface ArtworkDetailsProps {
   artwork: SelectArt;
 }
+
+
 
 export default function ArtworkDetails({ artwork }: ArtworkDetailsProps) {
   const [activeTab, setActiveTab] = useState("description");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -55,6 +59,17 @@ export default function ArtworkDetails({ artwork }: ArtworkDetailsProps) {
     }
   };
 
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   if (isEditing) {
     return (
       <EditArtwork
@@ -75,9 +90,7 @@ export default function ArtworkDetails({ artwork }: ArtworkDetailsProps) {
       >
         {isLoggedIn && (
           <div className="absolute top-2 right-2 z-10">
-            <Button       variant="ghost"
-      size="icon"
-        className="hover:outline-none hover:bg-card/10" onClick={handleEdit}>
+            <Button variant="ghost" size="icon" className="hover:outline-none hover:bg-card/10" onClick={handleEdit}>
               <MoreVertical className="h-4 w-4" />
             </Button>
           </div>
@@ -148,12 +161,32 @@ export default function ArtworkDetails({ artwork }: ArtworkDetailsProps) {
                 </TabsContent>
                 <TabsContent value="review" className="mt-6 space-y-4">
                   <div>
-                    <p className="italic text-lg font-serif  font-light text-pretty pb-4" style={{ color: colorTones[1][2] }}>
+                    <p className="italic text-lg font-serif font-light text-pretty pb-4" style={{ color: colorTones[1][2] }}>
                       {artwork.review ? JSON.stringify(artwork.review) : 'No review available.'}
                     </p>
                     <p className="text-xl" style={{ color: colorTones[1][3] }}>
                       –AI Lara
                     </p>
+                    {artwork.reviewAudioUrl && (
+                      <div className="mt-4">
+                        <Button
+                          onClick={togglePlayPause}
+                          className="w-12 h-12 rounded-full flex items-center justify-center"
+                          style={{
+                            backgroundColor: colorTones[1][5],
+                            color: colorTones[1][3],
+                          }}
+                        >
+                          {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+                        </Button>
+                        <audio
+                          ref={audioRef}
+                          src={artwork.reviewAudioUrl}
+                          onEnded={() => setIsPlaying(false)}
+                          style={{ display: 'none' }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </ScrollArea>

@@ -6,6 +6,8 @@ import { InsertArt } from '@/db/schema/artworks-schema';
 import { createArtworkAction, updateArtworkAction } from '../artworks-actions';
 import { generateObject } from 'ai';
 import { metadataSystemPrompt } from './metadata-prompt';
+import { generateTTS } from './tts';
+import { uploadToBlob } from '@/lib/blob-storage';
 
 const larasPhrases = [
   "queen Lara", "mate", "bitches", "lol", "prosecco", "cigarettes", "DMC", "vape", "party",
@@ -28,7 +30,7 @@ const metadataSchema = z.object({
 type GenerateArtworkMetadataResult = {
   status: 'success' | 'error';
   message: string;
-  data?: InsertArt;
+  data?: Partial<InsertArt> | null;
 };
 
 export async function generateArtworkMetadata(imageUrl: string, title: string, artType: string, userId: string, cloudinaryData: any, information: string, existingArtworkId?: string): Promise<GenerateArtworkMetadataResult> {
@@ -85,17 +87,22 @@ export async function generateArtworkMetadata(imageUrl: string, title: string, a
     return { 
       status: "success", 
       message: `Artwork metadata ${existingArtworkId ? 'updated' : 'generated and saved'} successfully`,
-      data: finalResult 
+      data: finalResult as Partial<InsertArt> | null | undefined
     };
   } catch (error) {
     console.error('Error generating metadata:', error);
-    return { status: "error", message: `Failed to generate and save artwork metadata: ${(error as Error).message}` };
+    return { status: "error", message: `Failed to generate and save artwork metadata: ${(error as Error).message}`, data: null };
   }
 }
 
 async function parseAndSaveArtwork(metadata: Partial<InsertArt>, imageUrl: string, type: 'human' | 'ai', userId: string, cloudinaryData: any) {
   console.log('Parsing and saving artwork...');
   const colors = parseColors(cloudinaryData.colors);
+  // Generate TTS for the review
+  const ttsAudioBuffer = await generateTTS((metadata.review as string) || '');
+  
+  // Upload the audio buffer to blob storage
+  const audioUrl = await uploadToBlob(Buffer.from(ttsAudioBuffer), 'audio/mpeg', `review-${Date.now()}.mp3`);
 
   const artworkData: InsertArt = {
     ...metadata,
@@ -104,6 +111,7 @@ async function parseAndSaveArtwork(metadata: Partial<InsertArt>, imageUrl: strin
     colours: JSON.stringify(colors),
     userId,
     published: false,
+    reviewAudioUrl: audioUrl,
   } as InsertArt;
 
   console.log('Artwork data to save:', artworkData);

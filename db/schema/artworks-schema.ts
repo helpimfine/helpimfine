@@ -19,13 +19,18 @@ export const artworksTable = pgTable("artworks", {
   published: boolean("published").default(false).notNull(),
   parentId: uuid("parent_id").references((): any => artworksTable.id),
   userId: text("user_id").references(() => profilesTable.userId).notNull(),
+  audioUrl: varchar("audio_url"),
   collectionId: uuid("collection_id").references(() => collectionsTable.id),
   created: timestamp("created").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
+  reviewAudioUrl: text("review_audio_url"),
 });
 
-export type InsertArt = typeof artworksTable.$inferInsert;
+export type InsertArt = typeof artworksTable.$inferInsert & {
+  reviewAudioUrl?: string;
+};
+
 export type SelectArt = typeof artworksTable.$inferSelect;
