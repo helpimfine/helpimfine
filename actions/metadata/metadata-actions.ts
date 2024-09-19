@@ -105,8 +105,9 @@ async function parseAndSaveArtwork(metadata: Partial<InsertArt>, imageUrl: strin
     console.log('Generating TTS...');
     const ttsAudioBuffer = await generateTTS((metadata.review as string) || '');
     console.log('TTS generated, buffer length:', ttsAudioBuffer.byteLength);
+
     console.log('Uploading to blob storage...');
-    const audioUrl = await uploadToBlob(Buffer.from(ttsAudioBuffer), 'audio/mpeg', `review-${Date.now()}.mp3`);
+    const audioUrl = await uploadToBlob(new Uint8Array(ttsAudioBuffer), 'audio/mpeg', `review-${Date.now()}.mp3`);
     console.log('Uploaded to blob storage, URL:', audioUrl);
 
     const artworkData: InsertArt = {
