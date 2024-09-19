@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import Header from "@/components/header";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
@@ -57,6 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </div>
             <Toaster />
           </ThemeProvider>
+          <Analytics />
         </body>
       </html>
   );

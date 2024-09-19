@@ -51,6 +51,24 @@ export async function generateMetadata({ params }: { params: { title: string } }
   };
 }
 
+function ArtworkImage({ artwork, colorTones }: { artwork: any; colorTones: string[][] }) {
+  return (
+    <div className="relative w-full aspect-square">
+      <Skeleton className="absolute inset-1 rounded-lg"
+        style={{ background: `${colorTones[1][6]}` }}/>
+      <Image
+        src={artwork.imageUrl || "/placeholder.png"}
+        alt={artwork.accessibilityDescription || artwork.title}
+        fill
+        className="rounded-lg"
+        style={{ objectFit: 'cover' }}
+        priority
+        sizes="(max-width: 768px) 100vw, (max-width: 1600px) 75vw, 66vw"
+      />
+    </div>
+  );
+}
+
 export default async function ArtworkDetailPage({ params }: { params: { title: string } }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -78,15 +96,7 @@ export default async function ArtworkDetailPage({ params }: { params: { title: s
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Main Artwork Section */}
             <div className="w-full xl:w-2/3">
-              <Image
-                src={artwork.imageUrl || "/placeholder.png"}
-                alt={artwork.accessibilityDescription || artwork.title}
-                width={1000}
-                height={1000}
-                className="w-full h-auto object-cover rounded-lg"
-                // placeholder="blur"
-                // blurDataURL="/placeholder.png"
-              />
+              <ArtworkImage artwork={artwork} colorTones={colorTones} />
             </div>
             {/* Artwork Details */}
             <div className="w-full xl:w-1/3 flex flex-col">

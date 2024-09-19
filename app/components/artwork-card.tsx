@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { updateArtworkAction } from "@/actions/artworks-actions";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { useState, useCallback } from 'react';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Colour {
   hex: string;
@@ -68,6 +69,7 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
       style={{ width: `${cardSize.width}px`, height: `${cardSize.height}px` }}
     >
       <div className="aspect-square relative">
+        <Skeleton className="absolute inset-1 rounded-lg"/>
         <Image
           src={artwork.imageUrl ?? '/placeholder.png'}
           alt={artwork.title ?? 'Untitled'}
@@ -75,8 +77,8 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           style={{ objectFit: 'cover' }}
           placeholder="blur"
-          blurDataURL={artwork.imageUrl || `${(artwork.imageUrl ?? "/placeholder.png").replace('/upload/', '/upload/c_scale,h_100,w_100/')}`}
-        />   
+          blurDataURL={artwork.imageUrl ? `${artwork.imageUrl.replace('/upload/', '/upload/c_scale,w_10/')}` : '/placeholder.png'}
+        />
         {editMode && (
           <Badge 
             className="absolute top-4 left-4 z-10" 

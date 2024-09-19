@@ -71,7 +71,7 @@ export default function SensoryExperienceLanding() {
           >
             <Link 
               href={item.href} 
-              className={`absolute inset-0 z-10 flex flex-col items-center justify-center p-6 md:p-10
+              className={`absolute inset-0 z-60 flex flex-col items-center justify-center p-6 md:p-10
                 ${item.type === 'eye' ? 'md:pt-20 md:pb-20 pt-20 pb-6' : 'md:pt-20 md:pb-20 pt-6 pb-20'}
                 group cursor-pointer`}
             >
@@ -93,7 +93,7 @@ export default function SensoryExperienceLanding() {
                       switch (icon.name) {
                         case 'ear':
                           position = { top: '10%', left: '10%' };
-                          size = baseSize * 0.9;
+                          size = baseSize * 0.8;
                           zIndex = 3;
                           break;
                         case 'ear-nose':
@@ -110,7 +110,7 @@ export default function SensoryExperienceLanding() {
                     } else { // eye
                       switch (icon.name) {
                         case 'eye':
-                          position = { top: '20%', right: '30%' };
+                          position = { top: '15%', right: '25%' };
                           size = baseSize * 1;
                           zIndex = 3;
                           break;
