@@ -63,8 +63,13 @@ export function ImageUpload({ onUploadComplete }: ImageUploadProps) {
       const result = await generateArtworkMetadata(imageUrl, title, type, userId, cloudinaryData, information, existingArtworkId);
       if (result.status === 'success' && result.data) {
         setStatus("Artwork saved!");
-        onUploadComplete(result.data);
-        router.push(`/art/${result.data.id}`);
+        // Ensure all required fields are present before calling onUploadComplete
+        if (result.data.title && result.data.type && result.data.userId) {
+          onUploadComplete(result.data as InsertArt);
+          router.push(`/art/${result.data.id}`);
+        } else {
+          throw new Error('Incomplete artwork data received');
+        }
       } else {
         throw new Error(result.message || 'Failed to generate metadata and save artwork');
       }

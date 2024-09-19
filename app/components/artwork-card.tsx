@@ -69,16 +69,17 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
       style={{ width: `${cardSize.width}px`, height: `${cardSize.height}px` }}
     >
       <div className="aspect-square relative">
-        <Skeleton className="absolute inset-0 rounded-lg"/>
+        <Skeleton className="absolute inset-0 rounded-lg"
+        style={{ background: `${generateColorTones(gradientColor)[6]}` }}/>
         <Image
-          src={artwork.imageUrl ?? '/placeholder.png'}
-          alt={artwork.title ?? 'Untitled'}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          style={{ objectFit: 'cover' }}
-          placeholder="blur"
-          blurDataURL={artwork.imageUrl ? `${artwork.imageUrl.replace('/upload/', '/upload/c_scale,w_10/')}` : '/placeholder.png'}
-        />
+          src={artwork.imageUrl || "/placeholder.png"}
+          alt={artwork.accessibilityDescription || artwork.title}
+        fill
+        className="rounded-lg"
+        style={{ objectFit: 'cover' }}
+        priority
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
         {editMode && (
           <Badge 
             className="absolute top-4 left-4 z-10" 

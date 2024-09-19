@@ -7,7 +7,7 @@ import { createArtworkAction, updateArtworkAction } from '../artworks-actions';
 import { generateObject } from 'ai';
 import { metadataSystemPrompt } from './metadata-prompt';
 import { generateTTS } from './tts';
-import { uploadToBlob } from '@/lib/blob-storage';
+import { uploadToBlob } from '@/actions/metadata/blob-storage';
 
 const larasPhrases = [
   "queen Lara", "mate", "bitches", "lol", "prosecco", "cigarettes", "DMC", "vape", "party",
