@@ -69,7 +69,7 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
       style={{ width: `${cardSize.width}px`, height: `${cardSize.height}px` }}
     >
       <div className="aspect-square relative">
-        <Skeleton className="absolute inset-0 rounded-lg"
+        <Skeleton className="absolute inset-1 rounded-lg"
         style={{ background: `${generateColorTones(gradientColor)[6]}` }}/>
         <Image
           src={artwork.imageUrl || "/placeholder.png"}

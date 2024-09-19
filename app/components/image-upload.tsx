@@ -55,15 +55,17 @@ export function ImageUpload({ onUploadComplete }: ImageUploadProps) {
       }
 
       const cloudinaryData = await uploadToCloudinary(file);
+      console.log('Cloudinary upload successful:', cloudinaryData);
       const imageUrl = cloudinaryData.secure_url;
 
       setStatus("Image uploaded. Processing...");
 
       const existingArtworkId = undefined;
       const result = await generateArtworkMetadata(imageUrl, title, type, userId, cloudinaryData, information, existingArtworkId);
+      console.log('generateArtworkMetadata result:', result);
+      
       if (result.status === 'success' && result.data) {
         setStatus("Artwork saved!");
-        // Ensure all required fields are present before calling onUploadComplete
         if (result.data.title && result.data.type && result.data.userId) {
           onUploadComplete(result.data as InsertArt);
           router.push(`/art/${result.data.id}`);
@@ -75,6 +77,9 @@ export function ImageUpload({ onUploadComplete }: ImageUploadProps) {
       }
     } catch (error) {
       console.error('Error uploading artwork:', error);
+      if (error instanceof Error) {
+        console.error('Error stack:', error.stack);
+      }
       setStatus((error as Error).message || 'Upload failed. Please try again.');
     } finally {
       setUploading(false);

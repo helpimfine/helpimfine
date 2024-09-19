@@ -21,7 +21,7 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio }) => {
   };
 
   return (
-    <MagicCard className="w-full h-auto p-6 flex flex-col md:flex-row gap-6">
+    <MagicCard className="w-full p-6 flex flex-col md:flex-row gap-6">
       <div className="flex flex-col  md:w-1/2  flex-grow">
         <Badge className="self-start mb-2">
           {audio.type === "mix" ? "Mix" : "Playlist"}

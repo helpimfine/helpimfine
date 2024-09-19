@@ -35,7 +35,6 @@ type GenerateArtworkMetadataResult = {
 
 export async function generateArtworkMetadata(imageUrl: string, title: string, artType: string, userId: string, cloudinaryData: any, information: string, existingArtworkId?: string): Promise<GenerateArtworkMetadataResult> {
   try {
-    
     console.log('Starting generateArtworkMetadata with:', { imageUrl, title, type: artType, userId, existingArtworkId });
     console.log('Cloudinary data:', cloudinaryData);
 
@@ -69,7 +68,6 @@ export async function generateArtworkMetadata(imageUrl: string, title: string, a
 
     console.log('OpenAI result:', result);
 
-
     const metadata = metadataSchema.parse(result.object).artwork_metadata;
     console.log('Parsed metadata:', metadata);
 
@@ -91,31 +89,47 @@ export async function generateArtworkMetadata(imageUrl: string, title: string, a
     };
   } catch (error) {
     console.error('Error generating metadata:', error);
+    if (error instanceof Error) {
+      console.error('Error stack:', error.stack);
+    }
     return { status: "error", message: `Failed to generate and save artwork metadata: ${(error as Error).message}`, data: null };
   }
 }
 
 async function parseAndSaveArtwork(metadata: Partial<InsertArt>, imageUrl: string, type: 'human' | 'ai', userId: string, cloudinaryData: any) {
   console.log('Parsing and saving artwork...');
-  const colors = parseColors(cloudinaryData.colors);
-  // Generate TTS for the review
-  const ttsAudioBuffer = await generateTTS((metadata.review as string) || '');
-  
-  // Upload the audio buffer to blob storage
-  const audioUrl = await uploadToBlob(Buffer.from(ttsAudioBuffer), 'audio/mpeg', `review-${Date.now()}.mp3`);
+  try {
+    const colors = parseColors(cloudinaryData.colors);
+    console.log('Parsed colors:', colors);
 
-  const artworkData: InsertArt = {
-    ...metadata,
-    type,
-    imageUrl,
-    colours: JSON.stringify(colors),
-    userId,
-    published: false,
-    reviewAudioUrl: audioUrl,
-  } as InsertArt;
+    console.log('Generating TTS...');
+    const ttsAudioBuffer = await generateTTS((metadata.review as string) || '');
+    console.log('TTS generated, buffer length:', ttsAudioBuffer.byteLength);
+    console.log('Uploading to blob storage...');
+    const audioUrl = await uploadToBlob(Buffer.from(ttsAudioBuffer), 'audio/mpeg', `review-${Date.now()}.mp3`);
+    console.log('Uploaded to blob storage, URL:', audioUrl);
 
-  console.log('Artwork data to save:', artworkData);
-  return await createArtworkAction(artworkData);
+    const artworkData: InsertArt = {
+      ...metadata,
+      type,
+      imageUrl,
+      colours: JSON.stringify(colors),
+      userId,
+      published: false,
+      reviewAudioUrl: audioUrl,
+    } as InsertArt;
+
+    console.log('Artwork data to save:', artworkData);
+    const result = await createArtworkAction(artworkData);
+    console.log('Artwork saved, result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error in parseAndSaveArtwork:', error);
+    if (error instanceof Error) {
+      console.error('Error stack:', error.stack);
+    }
+    throw error;
+  }
 }
 
 async function updateExistingArtwork(id: string, metadata: Partial<InsertArt>) {
