@@ -16,7 +16,7 @@ export function SearchBar({ search, setSearch, style }: SearchBarProps) {
       className="flex-grow bg-transparent hover:bg-opacity-30 transition-colors placeholder:text-inherit"
       style={{
         ...style,
-        backgroundColor: `${style?.borderColor}20`,
+        backgroundColor: style?.borderColor ? `${style.borderColor}20` : undefined,
         color: style?.borderColor
       }}
     />

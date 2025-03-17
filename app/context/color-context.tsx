@@ -15,8 +15,12 @@ const ColorContext = createContext<ColorContextType | undefined>(undefined);
 export function ColorProvider({ children }: { children: React.ReactNode }) {
   const [colorTones, setColorTones] = useState<string[][] | null>(null);
   const [lastViewedArtworkUrl, setLastViewedArtworkUrl] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Set mounted to true after component mounts to prevent hydration mismatch
+    setMounted(true);
+    
     // Load saved colors from localStorage on mount
     const savedColors = localStorage.getItem('artworkColors');
     const savedUrl = localStorage.getItem('lastViewedArtworkUrl');
@@ -44,7 +48,12 @@ export function ColorProvider({ children }: { children: React.ReactNode }) {
   }, [lastViewedArtworkUrl]);
 
   return (
-    <ColorContext.Provider value={{ colorTones, setColorTones, lastViewedArtworkUrl, setLastViewedArtworkUrl }}>
+    <ColorContext.Provider value={{ 
+      colorTones: mounted ? colorTones : null, 
+      setColorTones, 
+      lastViewedArtworkUrl: mounted ? lastViewedArtworkUrl : null, 
+      setLastViewedArtworkUrl 
+    }}>
       {children}
     </ColorContext.Provider>
   );

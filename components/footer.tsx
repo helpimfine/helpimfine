@@ -20,7 +20,7 @@ export default function Footer() {
       }}
     >
       <p 
-        className="text-sm font-inter"
+        className="text-sm font-bebas-neue"
         style={{ 
           color: colorTones ? colorTones[1][1] : 'inherit',
           opacity: 0.4

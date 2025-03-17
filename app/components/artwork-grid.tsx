@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { SelectArt } from "@/db/schema/artworks-schema";
 import { ArtworkCard } from "./artwork-card";
+import { createSlug } from "@/lib/utils";
 
 interface ArtworkGridProps {
   artworks: SelectArt[];
@@ -37,7 +38,7 @@ export function ArtworkGrid({
     <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {artworks.map((artwork) => (
         <Link 
-          href={`/art/${artwork.title.toLowerCase().replace(/ /g, '-')}`} 
+          href={`/art/${createSlug(artwork.title)}`} 
           key={artwork.id}
         >
           <ArtworkCard

@@ -141,7 +141,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
                 style={{ 
                   borderColor: currentColorTones[1][3],
                   color: currentColorTones[1][3],
-                  backgroundColor: `${currentColorTones[1][3]}20`
+                  backgroundColor: currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : undefined
                 }}
               >
                 <SelectValue placeholder="Status" className="placeholder:text-inherit" style={{ color: currentColorTones[1][3] }} />
@@ -149,7 +149,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
               <SelectContent 
                 className="backdrop-blur-md"
                 style={{ 
-                  backgroundColor: `${currentColorTones[1][3]}10`,
+                  backgroundColor: currentColorTones[1][3] ? `${currentColorTones[1][3]}10` : undefined,
                   borderColor: currentColorTones[1][3]
                 }}
               >
@@ -158,7 +158,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
                   className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
                   style={{ 
                     color: currentColorTones[1][3],
-                    backgroundColor: searchParams.get('published') === 'all' ? `${currentColorTones[1][3]}20` : 'transparent'
+                    backgroundColor: searchParams.get('published') === 'all' && currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : 'transparent'
                   }}
                 >
                   All
@@ -168,7 +168,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
                   className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
                   style={{ 
                     color: currentColorTones[1][3],
-                    backgroundColor: searchParams.get('published') === 'published' ? `${currentColorTones[1][3]}20` : 'transparent'
+                    backgroundColor: searchParams.get('published') === 'published' && currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : 'transparent'
                   }}
                 >
                   Published
@@ -178,7 +178,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
                   className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
                   style={{ 
                     color: currentColorTones[1][3],
-                    backgroundColor: searchParams.get('published') === 'unpublished' ? `${currentColorTones[1][3]}20` : 'transparent'
+                    backgroundColor: searchParams.get('published') === 'unpublished' && currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : 'transparent'
                   }}
                 >
                   Unpublished
@@ -199,7 +199,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
               style={{ 
                 borderColor: currentColorTones[1][3],
                 color: currentColorTones[1][3],
-                backgroundColor: `${currentColorTones[1][3]}20`
+                backgroundColor: currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : undefined
               }}
             >
               <SelectValue placeholder="Sort by" className="placeholder:text-inherit" style={{ color: currentColorTones[1][3] }} />
@@ -207,7 +207,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
             <SelectContent 
               className="backdrop-blur-md"
               style={{ 
-                backgroundColor: `${currentColorTones[1][3]}10`,
+                backgroundColor: currentColorTones[1][3] ? `${currentColorTones[1][3]}10` : undefined,
                 borderColor: currentColorTones[1][3]
               }}
             >
@@ -216,7 +216,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
                 className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
                 style={{ 
                   color: currentColorTones[1][3],
-                  backgroundColor: searchParams.get('sortBy') === 'created' ? `${currentColorTones[1][3]}20` : 'transparent'
+                  backgroundColor: searchParams.get('sortBy') === 'created' && currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : 'transparent'
                 }}
               >
                 Date
@@ -226,7 +226,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
                 className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
                 style={{ 
                   color: currentColorTones[1][3],
-                  backgroundColor: searchParams.get('sortBy') === 'title' ? `${currentColorTones[1][3]}20` : 'transparent'
+                  backgroundColor: searchParams.get('sortBy') === 'title' && currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : 'transparent'
                 }}
               >
                 Title
@@ -244,7 +244,7 @@ export function Filters({ editMode, onSearch }: FiltersProps) {
             style={{ 
               borderColor: currentColorTones[1][3],
               color: currentColorTones[1][3],
-              backgroundColor: `${currentColorTones[1][3]}20`
+              backgroundColor: currentColorTones[1][3] ? `${currentColorTones[1][3]}20` : undefined
             }}
           >
             {searchParams.get('sortOrder') === 'asc' ? <ArrowUpIcon /> : <ArrowDownIcon />}

@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from '@/utils/supabase/client';
+import { createSlug } from '@/lib/utils';
 
 const CLOUDINARY_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
 const CLOUDINARY_API_KEY = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
@@ -67,7 +68,8 @@ export function ImageUpload({ onUploadComplete }: ImageUploadProps) {
         // Ensure all required fields are present before calling onUploadComplete
         if (result.data.title && result.data.type && result.data.userId) {
           onUploadComplete(result.data as InsertArt);
-          router.push(`/art/${result.data.id}`);
+          const slug = createSlug(result.data.title);
+          router.push(`/art/${slug}`);
         } else {
           throw new Error('Incomplete artwork data received');
         }

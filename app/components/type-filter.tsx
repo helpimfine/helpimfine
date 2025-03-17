@@ -13,7 +13,7 @@ export function TypeFilter({ typeFilter, setTypeFilter, style }: TypeFilterProps
         className="w-[180px] bg-transparent hover:bg-opacity-30 transition-colors backdrop-blur-sm" 
         style={{
           ...style,
-          backgroundColor: `${style?.borderColor}20`,
+          backgroundColor: style?.borderColor ? `${style.borderColor}20` : undefined,
           color: style?.borderColor
         }}
       >
@@ -22,7 +22,7 @@ export function TypeFilter({ typeFilter, setTypeFilter, style }: TypeFilterProps
       <SelectContent 
         className="backdrop-blur-md"
         style={{
-          backgroundColor: `${style?.borderColor}10`,
+          backgroundColor: style?.borderColor ? `${style.borderColor}10` : undefined,
           borderColor: style?.borderColor
         }}
       >
@@ -31,7 +31,7 @@ export function TypeFilter({ typeFilter, setTypeFilter, style }: TypeFilterProps
           className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
           style={{ 
             color: style?.borderColor,
-            backgroundColor: typeFilter === 'all' ? `${style?.borderColor}20` : 'transparent'
+            backgroundColor: typeFilter === 'all' && style?.borderColor ? `${style.borderColor}20` : 'transparent'
           }}
         >
           All
@@ -41,7 +41,7 @@ export function TypeFilter({ typeFilter, setTypeFilter, style }: TypeFilterProps
           className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
           style={{ 
             color: style?.borderColor,
-            backgroundColor: typeFilter === 'human' ? `${style?.borderColor}20` : 'transparent'
+            backgroundColor: typeFilter === 'human' && style?.borderColor ? `${style.borderColor}20` : 'transparent'
           }}
         >
           Human
@@ -51,7 +51,7 @@ export function TypeFilter({ typeFilter, setTypeFilter, style }: TypeFilterProps
           className="hover:bg-opacity-30 transition-colors data-[highlighted]:bg-opacity-30"
           style={{ 
             color: style?.borderColor,
-            backgroundColor: typeFilter === 'ai' ? `${style?.borderColor}20` : 'transparent'
+            backgroundColor: typeFilter === 'ai' && style?.borderColor ? `${style.borderColor}20` : 'transparent'
           }}
         >
           AI
