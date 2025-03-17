@@ -21,9 +21,9 @@ export async function createAudioAction(audio: InsertAudio): Promise<ActionState
   }
 }
 
-export async function getAudiosAction(): Promise<ActionState> {
+export async function getAudiosAction(tag?: string): Promise<ActionState> {
   try {
-    const audios = await getAudios();
+    const audios = await getAudios(tag);
     return { status: "success", message: "Audios retrieved successfully", data: audios };
   } catch (error) {
     console.error("Error getting audios:", error);

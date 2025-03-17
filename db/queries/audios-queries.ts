@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/db";
-import { eq } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { InsertAudio, SelectAudio, audiosTable } from "../schema/audios-schema";
 
 export const createAudio = async (data: InsertAudio) => {
@@ -14,9 +14,18 @@ export const createAudio = async (data: InsertAudio) => {
   }
 };
 
-export const getAudios = async (): Promise<SelectAudio[]> => {
+export const getAudios = async (tag?: string): Promise<SelectAudio[]> => {
   try {
-    return db.query.audios.findMany();
+    if (tag) {
+      return db.query.audios.findMany({
+        where: (audio) => sql`${tag} = ANY(${audio.tags})`,
+        orderBy: (audio) => [desc(audio.created)]
+      });
+    }
+    
+    return db.query.audios.findMany({
+      orderBy: (audio) => [desc(audio.created)]
+    });
   } catch (error) {
     console.error("Error getting audios:", error);
     throw new Error("Failed to get audios");
