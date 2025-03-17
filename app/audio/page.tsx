@@ -9,10 +9,25 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useColors } from "@/app/context/color-context";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
+// Main page component
 export default function AudioPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full py-24 flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    }>
+      <AudioContent />
+    </Suspense>
+  );
+}
+
+// Content component that uses searchParams
+function AudioContent() {
   const { colorTones } = useColors();
-  const searchParams = useSearchParams();
+  const searchParamsPromise = useSearchParams();
   const [audio, setAudio] = React.useState<{
     data: SelectAudio[],
     filteredData: SelectAudio[],
@@ -26,44 +41,51 @@ export default function AudioPage() {
   });
   
   React.useEffect(() => {
-    // Parse the tags from URL (comma-separated string to array)
-    const selectedTags = searchParams.get('tags') ? searchParams.get('tags')!.split(",") : [];
-    
     const fetchData = async () => {
-      // Get all audios
-      const result = await getAudiosAction();
-      
-      if (result.status === "success") {
-        const audios = result.data;
+      try {
+        // Await the searchParams Promise
+        const searchParams = await searchParamsPromise;
         
-        // Filter the audios by tags if any are selected
-        // Must match ALL selected tags, not just one
-        const filteredAudios = selectedTags.length > 0
-          ? audios.filter((audio: SelectAudio) => 
-              selectedTags.every(tag => audio.tags?.includes(tag) ?? false)
+        // Parse the tags from URL (comma-separated string to array)
+        const selectedTags = searchParams.get('tags') ? searchParams.get('tags')!.split(",") : [];
+        
+        // Get all audios
+        const result = await getAudiosAction();
+        
+        if (result.status === "success") {
+          const audios = result.data;
+          
+          // Filter the audios by tags if any are selected
+          // Must match ALL selected tags, not just one
+          const filteredAudios = selectedTags.length > 0
+            ? audios.filter((audio: SelectAudio) => 
+                selectedTags.every(tag => audio.tags?.includes(tag) ?? false)
+              )
+            : audios;
+          
+          // Get all unique tags
+          const allTags = Array.from(
+            new Set(
+              audios
+                .flatMap((audio: SelectAudio) => audio.tags || [])
+                .filter(Boolean) as string[]
             )
-          : audios;
-        
-        // Get all unique tags
-        const allTags = Array.from(
-          new Set(
-            audios
-              .flatMap((audio: SelectAudio) => audio.tags || [])
-              .filter(Boolean) as string[]
-          )
-        );
-        
-        setAudio({
-          data: audios,
-          filteredData: filteredAudios,
-          allTags,
-          selectedTags
-        });
+          );
+          
+          setAudio({
+            data: audios,
+            filteredData: filteredAudios,
+            allTags,
+            selectedTags
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching audio data:", error);
       }
     };
     
     fetchData();
-  }, [searchParams]);
+  }, [searchParamsPromise]);
 
   // Container animation
   const containerVariants = {
@@ -114,7 +136,7 @@ export default function AudioPage() {
           >
             <h1 className="text-4xl font-bold mb-6 font-bebas-neue">Audio</h1>
             
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-6 items-center">
               <TagLink 
                 href="/audio" 
                 isActive={audio.selectedTags.length === 0}
@@ -141,12 +163,12 @@ export default function AudioPage() {
             {audio.filteredData.length === 0 ? (
               <p>No audio content found.</p>
             ) : (
-              audio.filteredData.map((item: SelectAudio) => (
+              audio.filteredData.map((item: SelectAudio, index: number) => (
                 <motion.div 
                   key={item.id}
                   variants={itemVariants}
                 >
-                  <AudioCard audio={item} />
+                  <AudioCard audio={item} index={index} />
                 </motion.div>
               ))
             )}
@@ -177,6 +199,7 @@ function TagLink({
       <motion.div
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 1 }}
       >
         <Link href={href}>
           <Badge 
@@ -206,10 +229,19 @@ function TagLink({
   const newTagsParam = newTags.length > 0 ? newTags.join(',') : '';
   const newHref = newTagsParam ? `/audio?tags=${newTagsParam}` : '/audio';
   
+  // Capitalize the first letter of each tag
+  const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
+  
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileTap={{ scale: 0.9 }}
+      animate={{ 
+        scale: isSelected ? [1, 1.1, 1] : 1,
+        transition: { 
+          duration: isSelected ? 0.3 : 0.2 
+        }
+      }}
     >
       <Link href={newHref}>
         <Badge 

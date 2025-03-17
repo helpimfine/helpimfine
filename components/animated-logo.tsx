@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { Logo } from './logo';
 
@@ -17,15 +17,24 @@ export function AnimatedLogo({
   const controls = useAnimationControls();
   const filterControls = useAnimationControls();
   
-  // Watch for external shock prop
-  useEffect(() => {
-    if (shock) {
-      triggerShockAnimation();
-    }
-  }, [shock]);
+  // Reset all animations
+  const resetAnimation = useCallback(() => {
+    controls.start({
+      x: 0,
+      y: 0,
+      rotate: 0,
+      scale: 1,
+      transition: { duration: 0.3, ease: "easeOut" }
+    });
+    
+    filterControls.start({
+      filter: "brightness(1) contrast(1) drop-shadow(0 0 0 transparent)",
+      transition: { duration: 0.3 }
+    });
+  }, [controls, filterControls]);
   
   // Electric shock effect
-  const triggerShockAnimation = () => {
+  const triggerShockAnimation = useCallback(() => {
     // Random intensity for the shock (1-3)
     const intensity = Math.floor(Math.random() * 3) + 1;
     const speed = 0.7 / intensity;
@@ -68,26 +77,17 @@ export function AnimatedLogo({
         times: [0, 0.2, 0.4, 0.6, 1]
       }
     });
-  };
+  }, [controls, filterControls, isHovered, onShockComplete, resetAnimation]);
   
-  // Reset all animations
-  const resetAnimation = () => {
-    controls.start({
-      x: 0,
-      y: 0,
-      rotate: 0,
-      scale: 1,
-      transition: { duration: 0.3, ease: "easeOut" }
-    });
-    
-    filterControls.start({
-      filter: "brightness(1) contrast(1) drop-shadow(0 0 0 transparent)",
-      transition: { duration: 0.3 }
-    });
-  };
+  // Watch for external shock prop
+  useEffect(() => {
+    if (shock) {
+      triggerShockAnimation();
+    }
+  }, [shock, triggerShockAnimation]);
   
   // Electric shock effect when hovered
-  const handleHoverStart = () => {
+  const handleHoverStart = useCallback(() => {
     setIsHovered(true);
     triggerShockAnimation();
     
@@ -108,12 +108,12 @@ export function AnimatedLogo({
         });
       }
     }, 800);
-  };
+  }, [controls, isHovered, setIsHovered, triggerShockAnimation]);
   
-  const handleHoverEnd = () => {
+  const handleHoverEnd = useCallback(() => {
     setIsHovered(false);
     resetAnimation();
-  };
+  }, [resetAnimation, setIsHovered]);
   
   return (
     <motion.div

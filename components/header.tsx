@@ -114,9 +114,23 @@ export default function Header() {
           {!isHomePage && (
             <>
               <nav className="hidden md:flex space-x-6 text-2xl font-bebas-neue">
-                <Link href="/art" className="hover:underline">Art</Link>
-                <Link href="/audio" className="hover:underline">Audio</Link>
-                <Link href="/about" className="hover:underline">About</Link>
+                <Link 
+                  href="/art" 
+                  style={{ 
+                    color: pathname === '/art' || pathname.startsWith('/art/') 
+                      ? colorTones?.[0][0] 
+                      : undefined
+                  }}
+                >Art</Link>
+                <Link 
+                  href="/audio" 
+                  style={{ 
+                    color: pathname === '/audio' || pathname.startsWith('/audio/') 
+                      ? colorTones?.[0][0] 
+                      : undefined
+                  }}
+                >Audio</Link>
+                <Link href="/about">About</Link>
               </nav>
               <div className="flex items-center space-x-4">
                 <div className="md:hidden">
@@ -177,8 +191,7 @@ export default function Header() {
           }}
         >
           <Link href="/">
-            <div onClick={(e) => {
-              e.preventDefault();
+            <div onClick={() => {
               handleShock();
             }} style={{ cursor: 'pointer' }}>
               <AnimatedLogo 
@@ -205,7 +218,19 @@ export default function Header() {
                   damping: 10
                 }}
               >
-                <Link href="/art" className="hover:underline">Art</Link>
+                <Link 
+                  href="/art" 
+                  style={{ 
+                    color: pathname === '/art' || pathname.startsWith('/art/') 
+                      ? colorTones?.[0][0] 
+                      : undefined,
+                    textShadow: pathname === '/art' || pathname.startsWith('/art/')
+                      ? "0 0 8px rgba(255,255,255,0.3)"
+                      : undefined
+                  }}
+                >
+                  Art
+                </Link>
               </motion.div>
               <motion.div 
                 whileHover={{ 
@@ -219,7 +244,19 @@ export default function Header() {
                   damping: 10
                 }}
               >
-                <Link href="/audio" className="hover:underline">Audio</Link>
+                <Link 
+                  href="/audio" 
+                  style={{ 
+                    color: pathname === '/audio' || pathname.startsWith('/audio/') 
+                      ? colorTones?.[0][0] 
+                      : undefined,
+                    textShadow: pathname === '/audio' || pathname.startsWith('/audio/')
+                      ? "0 0 8px rgba(255,255,255,0.3)"
+                      : undefined
+                  }}
+                >
+                  Audio
+                </Link>
               </motion.div>
               <motion.div 
                 whileHover={{ 
@@ -233,7 +270,7 @@ export default function Header() {
                   damping: 10
                 }}
               >
-                <Link href="/about" className="hover:underline">About</Link>
+                <Link href="/about">About</Link>
               </motion.div>
             </nav>
             <div className="flex items-center space-x-4">
@@ -318,7 +355,21 @@ export default function Header() {
                   textShadow: "0 0 8px rgba(255,255,255,0.3)"
                 }}
               >
-                <Link href="/art" className="block hover:underline" onClick={toggleMenu}>Art</Link>
+                <Link 
+                  href="/art" 
+                  className="block" 
+                  onClick={toggleMenu}
+                  style={{ 
+                    color: pathname === '/art' || pathname.startsWith('/art/') 
+                      ? colorTones?.[0][0] 
+                      : undefined,
+                    textShadow: pathname === '/art' || pathname.startsWith('/art/')
+                      ? "0 0 8px rgba(255,255,255,0.3)"
+                      : undefined
+                  }}
+                >
+                  Art
+                </Link>
               </motion.li>
               <motion.li 
                 initial={{ x: -40, opacity: 0 }}
@@ -336,7 +387,21 @@ export default function Header() {
                   textShadow: "0 0 8px rgba(255,255,255,0.3)"
                 }}
               >
-                <Link href="/audio" className="block hover:underline" onClick={toggleMenu}>Audio</Link>
+                <Link 
+                  href="/audio" 
+                  className="block" 
+                  onClick={toggleMenu}
+                  style={{ 
+                    color: pathname === '/audio' || pathname.startsWith('/audio/') 
+                      ? colorTones?.[0][0] 
+                      : undefined,
+                    textShadow: pathname === '/audio' || pathname.startsWith('/audio/')
+                      ? "0 0 8px rgba(255,255,255,0.3)"
+                      : undefined
+                  }}
+                >
+                  Audio
+                </Link>
               </motion.li>
               <motion.li 
                 initial={{ x: -40, opacity: 0 }}
@@ -354,7 +419,7 @@ export default function Header() {
                   textShadow: "0 0 8px rgba(255,255,255,0.3)"
                 }}
               >
-                <Link href="/about" className="block hover:underline" onClick={toggleMenu}>About</Link>
+                <Link href="/about" className="block" onClick={toggleMenu}>About</Link>
               </motion.li>
               <motion.li 
                 initial={{ opacity: 0, y: 20 }}
