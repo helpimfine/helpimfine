@@ -9,23 +9,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useColors } from "@/app/context/color-context";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
-// Main page component
+// Main page component that accepts search params
 export default function AudioPage() {
-  return (
-    <Suspense fallback={
-      <div className="w-full py-24 flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    }>
-      <AudioContent />
-    </Suspense>
-  );
-}
-
-// Content component that uses searchParams
-function AudioContent() {
   const { colorTones } = useColors();
   const searchParamsPromise = useSearchParams();
   const [audio, setAudio] = React.useState<{
@@ -110,18 +96,10 @@ function AudioContent() {
     }
   };
 
-  if (audio.data.length === 0) {
-    return (
-      <div className="w-full py-24 flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
       <div 
-        className="w-full py-24"
+        className="w-full py-24 min-h-screen"
         style={{ 
           backgroundColor: colorTones ? colorTones[1][5] : 'transparent',
           color: colorTones ? colorTones[1][1] : 'inherit'
@@ -160,7 +138,7 @@ function AudioContent() {
             initial="hidden"
             animate="visible"
           >
-            {audio.filteredData.length === 0 ? (
+            {audio.filteredData.length === 0 && audio.data.length > 0 ? (
               <p>No audio content found.</p>
             ) : (
               audio.filteredData.map((item: SelectAudio, index: number) => (
@@ -193,6 +171,26 @@ function TagLink({
   isActive?: boolean; 
   label: string;
 }) {
+  const { colorTones } = useColors();
+  
+  // Define whether the tag is selected
+  const isSelected = tag ? selectedTags.includes(tag) : false;
+  
+  // Define color depth values for consistency
+  const bgColorDepth = 6;   // Use a moderate depth for visibility
+  const textColorDepth = 0; // Lighter text for maximum contrast (was 1)
+  const borderColorDepth = 4;
+  
+  // Theme-based style for tags
+  const tagStyle = colorTones ? {
+    backgroundColor: isActive || isSelected ? colorTones[0][bgColorDepth] : 'transparent',
+    color: isActive || isSelected ? colorTones[0][textColorDepth] : colorTones[0][textColorDepth + 1],
+    borderColor: colorTones[0][borderColorDepth],
+  } : {};
+  
+  // Capitalize the first letter of the tag
+  const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
+  
   // If href is provided, use it directly (for "All" tag)
   if (href) {
     return (
@@ -204,9 +202,10 @@ function TagLink({
         <Link href={href}>
           <Badge 
             variant={isActive ? "default" : "outline"}
-            className="cursor-pointer"
+            className="cursor-pointer flex items-center justify-center min-h-[28px]"
+            style={tagStyle}
           >
-            {label}
+            {displayLabel}
           </Badge>
         </Link>
       </motion.div>
@@ -214,7 +213,7 @@ function TagLink({
   }
   
   // Otherwise, handle multi-select logic
-  const isSelected = tag ? selectedTags.includes(tag) : false;
+  // const isSelected = tag ? selectedTags.includes(tag) : false;
   
   // Create new URL with updated tag selection
   let newTags: string[];
@@ -228,9 +227,6 @@ function TagLink({
   
   const newTagsParam = newTags.length > 0 ? newTags.join(',') : '';
   const newHref = newTagsParam ? `/audio?tags=${newTagsParam}` : '/audio';
-  
-  // Capitalize the first letter of each tag
-  const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
   
   return (
     <motion.div
@@ -246,9 +242,10 @@ function TagLink({
       <Link href={newHref}>
         <Badge 
           variant={isSelected ? "default" : "outline"}
-          className="cursor-pointer flex items-center gap-1"
+          className="cursor-pointer flex items-center gap-1 min-h-[28px]"
+          style={tagStyle}
         >
-          {label}
+          {displayLabel}
           {isSelected && (
             <span className="ml-1 rounded-full bg-foreground/20 w-4 h-4 flex items-center justify-center text-xs">
               ×

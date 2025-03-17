@@ -42,13 +42,12 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio, index = 0 }) => {
     return `${pathname}?tags=${newTags.join(',')}`;
   };
 
-  // Determine color tone variation based on index
   // Use modulo 3 to alternate between 3 different variations
   const colorVariation = index % 3;
   
-  // Set different color depths for different cards
-  const bgColorDepth = [4, 5, 6][colorVariation];  // Lighter to darker
-  const textColorDepth = [2, 1, 0][colorVariation]; // Darker to lighter
+  // Use moderate color depths and add opacity for background instead of very dark colors
+  const bgColorDepth = [4, 5, 6][colorVariation];  // Using moderate depth values
+  const textColorDepth = [1, 0, 0][colorVariation]; // Keeping light text for contrast
   const borderColorDepth = [3, 4, 5][colorVariation];
 
   // Only apply custom styles if colorTones are available
@@ -57,13 +56,28 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio, index = 0 }) => {
     color: colorTones[0][textColorDepth],
     borderColor: colorTones[0][borderColorDepth],
     borderWidth: '1px',
-    borderStyle: 'solid'
+    borderStyle: 'solid',
+    position: 'relative' as const,
   } : {};
+
+  // Add a semi-transparent overlay to darken the background
+  const overlayStyle = {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.25)', // 25% black overlay for darkening
+    pointerEvents: 'none' as const, // Allow clicks to pass through
+    zIndex: 1,
+  };
 
   // Badge style with complementary color
   const badgeStyle = colorTones ? {
     backgroundColor: colorTones[1][bgColorDepth],
     color: colorTones[1][textColorDepth],
+    position: 'relative' as const,
+    zIndex: 2, // Position above the overlay
   } : {};
 
   return (
@@ -77,7 +91,10 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio, index = 0 }) => {
         className="w-full p-6 flex flex-col md:flex-row gap-6 overflow-hidden"
         style={cardStyle}
       >
-        <div className="flex flex-col md:w-1/2 flex-grow">
+        {/* Dark overlay for better contrast */}
+        <div style={overlayStyle}></div>
+        
+        <div className="flex flex-col md:w-1/2 flex-grow" style={{ position: 'relative', zIndex: 2 }}>
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -113,6 +130,10 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio, index = 0 }) => {
           {audio.tags && audio.tags.length > 0 && (
             <motion.div 
               className="flex flex-wrap gap-2 mt-4"
+              style={{ 
+                position: 'relative',
+                zIndex: 2
+              }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 }}
@@ -121,12 +142,13 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio, index = 0 }) => {
                 const isSelected = currentTags.includes(tag);
                 const href = createTagLink(tag);
                 
-                // Slightly varying tag colors for visual interest
-                const tagVariation = (index + tagIndex) % 5;
+                // Use the same theme as the card for consistency
                 const tagStyle = colorTones ? {
-                  backgroundColor: isSelected ? colorTones[1][bgColorDepth] : 'transparent',
-                  color: isSelected ? colorTones[1][textColorDepth] : colorTones[0][textColorDepth],
-                  borderColor: colorTones[1][borderColorDepth],
+                  backgroundColor: isSelected ? colorTones[0][bgColorDepth] : 'transparent',
+                  color: isSelected ? colorTones[0][textColorDepth] : colorTones[0][textColorDepth - 1],
+                  borderColor: colorTones[0][borderColorDepth],
+                  position: 'relative' as const,
+                  zIndex: 2
                 } : {};
                 
                 return (
@@ -157,7 +179,9 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio, index = 0 }) => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           style={colorTones ? {
-            boxShadow: `0 4px 20px rgba(${parseInt(colorTones[0][0].slice(1, 3), 16)}, ${parseInt(colorTones[0][0].slice(3, 5), 16)}, ${parseInt(colorTones[0][0].slice(5, 7), 16)}, 0.3)`
+            boxShadow: `0 4px 20px rgba(${parseInt(colorTones[0][0].slice(1, 3), 16)}, ${parseInt(colorTones[0][0].slice(3, 5), 16)}, ${parseInt(colorTones[0][0].slice(5, 7), 16)}, 0.3)`,
+            position: 'relative' as const,
+            zIndex: 2
           } : {}}
         >
           {audio.type === "Playlist" && audio.audioUrl ? (
