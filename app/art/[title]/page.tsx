@@ -1,4 +1,3 @@
-import { getArtwork } from "@/db/queries/artworks-queries";
 import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import ArtworkDetails from "@/app/components/artwork-details";
@@ -8,6 +7,8 @@ import { createClient } from "@/utils/supabase/server";
 import { Metadata } from 'next';
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SaveColorsToStorage } from "@/app/components/save-colors";
+import { getArtworkBySlug } from "@/db/queries/artwork-queries";
 
 function ArtworkDetailSkeleton() {
   return (
@@ -25,88 +26,84 @@ function ArtworkDetailSkeleton() {
   );
 }
 
-export async function generateMetadata({ params }: { params: { title: string } }): Promise<Metadata> {
-  const artwork = await getArtwork(params.title);
-
-  if (!artwork) {
-    return {
-      title: 'Artwork Not Found',
-    };
-  }
-
+export async function generateMetadata({ params }: { params: Promise<{ title: string }> }): Promise<Metadata> {
+  const { title } = await params;
+  const artwork = await getArtworkBySlug(title);
+  
   return {
-    title: `${artwork.title} | Help I'm fine`,
-    description: artwork.description || `View "${artwork.title}" by Thomas Wainwright`,
+    title: artwork.title,
+    description: artwork.accessibilityDescription || artwork.title,
     openGraph: {
-      title: `${artwork.title} | Help I'm fine`,
-      description: artwork.description || `View "${artwork.title}" by Thomas Wainwright`,
-      images: [{ url: artwork.imageUrl || "/placeholder.png" }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${artwork.title} | Help I'm fine`,
-      description: artwork.description || `View "${artwork.title}" by Thomas Wainwright`,
-      images: [artwork.imageUrl || "/placeholder.png"],
+      images: artwork.imageUrl ? [{ url: artwork.imageUrl }] : [],
     },
   };
 }
 
-function ArtworkImage({ artwork, colorTones }: { artwork: any; colorTones: string[][] }) {
-  return (
-    <div className="relative w-full aspect-square">
-      <Skeleton className="absolute inset-1 rounded-lg"
-        style={{ background: `${colorTones[1][6]}` }}/>
-      <Image
-        src={artwork.imageUrl || "/placeholder.png"}
-        alt={artwork.accessibilityDescription || artwork.title}
-        fill
-        className="rounded-lg"
-        style={{ objectFit: 'cover' }}
-        priority
-        sizes="(max-width: 768px) 100vw, (max-width: 1600px) 75vw, 66vw"
-      />
-    </div>
-  );
-}
-
-export default async function ArtworkDetailPage({ params }: { params: { title: string } }) {
-  const supabase = createClient();
+export default async function Page({ params }: { params: Promise<{ title: string }> }) {
+  const { title } = await params;
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const artwork = await getArtwork(params.title);
+  let artwork;
+  try {
+    artwork = await getArtworkBySlug(title);
+  } catch (error) {
+    notFound();
+  }
 
   if (!artwork) {
     notFound();
   }
 
   if (!artwork.published && !user) {
-    redirect('/login');
+    redirect("/login");
   }
 
-  const artworkColors = artwork.colours && Array.isArray(artwork.colours)
-    ? artwork.colours.map((c: { hex: string }) => c.hex)
-    : ['#D3D3D3', '#62757f', '#4B4B4B', '#8A9A5B'];
+  const artworkColors =
+    artwork.colours && Array.isArray(artwork.colours)
+      ? artwork.colours.map((c: { hex: string }) => c.hex)
+      : ["#D3D3D3", "#62757f", "#4B4B4B", "#8A9A5B"];
 
-  const colorTones = artworkColors.map((color: string) => generateColorTones(color));
+  const colorTones = artworkColors.map((color: string) =>
+    generateColorTones(color)
+  );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: `${colorTones[1][5]}` }}>
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: `${colorTones[1][5]}` }}
+    >
       <div className="max-w-[95%] sm:max-w-[90%] lg:max-w-[80%] mx-auto py-28">
+        <SaveColorsToStorage colorTones={colorTones} artworkUrl={artwork.imageUrl} />
         <Suspense fallback={<ArtworkDetailSkeleton />}>
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Main Artwork Section */}
             <div className="w-full xl:w-2/3">
-              <ArtworkImage artwork={artwork} colorTones={colorTones} />
+              <div className="relative w-full aspect-square">
+                <Skeleton
+                  className="absolute inset-1 rounded-lg"
+                  style={{ background: `${colorTones[1][6]}` }}
+                />
+                <Image
+                  src={artwork.imageUrl || "/placeholder.png"}
+                  alt={artwork.accessibilityDescription || artwork.title}
+                  fill
+                  className="rounded-lg"
+                  style={{ objectFit: "cover" }}
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1600px) 75vw, 66vw"
+                />
+              </div>
             </div>
             {/* Artwork Details */}
             <div className="w-full xl:w-1/3 flex flex-col">
-              <ArtworkDetails artwork={artwork}/>
+              <ArtworkDetails artwork={artwork} />
             </div>
           </div>
         </Suspense>
         {/* Related Artwork Section */}
         <div className="mt-8">
-          <RelatedArtworks 
+          <RelatedArtworks
             currentArtworkId={artwork.id}
             artworkType={artwork.type}
             statusColor={colorTones[1][3]}

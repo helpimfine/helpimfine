@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
 export async function login(formData: FormData) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const data = {
     email: formData.get('email') as string,
@@ -33,7 +33,7 @@ export async function signup(formData: FormData) {
 
   // Keep the original code commented out for future use
   /*
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const data = {
     email: formData.get('email') as string,

@@ -17,7 +17,7 @@ const larasPhrases = [
 
 const metadataSchema = z.object({
   artwork_metadata: z.object({
-    title: z.string().describe("If the user provides a title, use it. Otherwise, craft a title that's sharp, witty, and captures or describes artwork’s essence. Think of something that feels amusing but above specific to the objects/colours/textures the comprise the collage or image. Keep it in sentence case with a full stop, and make sure it’s specific and memorable."),
+    title: z.string().describe("If the user provides a title, use it. Otherwise, craft a title that's sharp, witty, and captures or describes artwork's essence. Think of something that feels amusing but above specific to the objects/colours/textures the comprise the collage or image. Keep it in sentence case with a full stop, and make sure it's specific and memorable."),
     description: z.string().describe("Craft a detailed description for website visitors, balancing objective details with a touch of artistic interpretation to engage the viewer. Your tone should be matter-of-fact, yet engaging. Focus on clearly describing the artwork's elements, such as patterns, colours, textures, and emotions evoked but don't use words like 'juxtapose' or 'captivating' or other jargon."),   
     accessibilityDescription: z.string().describe("A comprehensive visual description of the artwork, detailing colors, shapes, textures, and composition. Describe the scene or subject matter thoroughly, including any notable elements or patterns. Provide a clear and vivid account that helps someone visualize the artwork without seeing it."),
     mainObjects: z.array(z.string()).describe("Identify the main objects, including patterns, colors, shapes, and identifiable textures."),
@@ -42,7 +42,7 @@ export async function generateArtworkMetadata(imageUrl: string, title: string, a
     console.log('Generating metadata with OpenAI...');
 
     const openaiInput = {
-      model: openai('gpt-4o'),
+      model: openai('gpt-4o-mini'),
       temperature: 0.8,
       schema: metadataSchema,
       system: metadataSystemPrompt,
@@ -104,10 +104,10 @@ async function parseAndSaveArtwork(metadata: Partial<InsertArt>, imageUrl: strin
 
     console.log('Generating TTS...');
     const ttsAudioBuffer = await generateTTS((metadata.review as string) || '');
-    console.log('TTS generated, buffer length:', ttsAudioBuffer.byteLength);
+    console.log('TTS generated, buffer byteLength:', ttsAudioBuffer.byteLength);
 
     console.log('Uploading to blob storage...');
-    const audioUrl = await uploadToBlob(new Uint8Array(ttsAudioBuffer), 'audio/mpeg', `review-${Date.now()}.mp3`);
+    const audioUrl = await uploadToBlob(Buffer.from(ttsAudioBuffer), 'audio/mpeg', `review-${Date.now()}.mp3`);
     console.log('Uploaded to blob storage, URL:', audioUrl);
 
     const artworkData: InsertArt = {

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from "next/link"
 import { motion, useAnimation } from "framer-motion"
 import { Eye, Ear } from "lucide-react"
@@ -18,10 +18,34 @@ const icons = [
 
 export default function SensoryExperienceLanding() {
   const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const controls = useAnimation()
+  const randomValuesRef = useRef({
+    positions: Array(icons.length).fill(null).map(() => ({ x: 0, y: 0, rotate: 0 })),
+    hoverValues: Array(icons.length).fill(null).map(() => ({ scale: 1, rotate: 0 }))
+  });
 
   useEffect(() => {
+    setMounted(true)
+    
+    // Initialize random values only on client
+    randomValuesRef.current = {
+      positions: Array(icons.length).fill(null).map(() => ({
+        x: Math.random() * 30 - 15,
+        y: Math.random() * 30 - 15,
+        rotate: Math.random() * 10 - 5
+      })),
+      hoverValues: Array(icons.length).fill(null).map(() => ({
+        scale: 1.2,
+        rotate: Math.random() * 20 - 10
+      }))
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return
+
     function handleResize() {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     }
@@ -30,32 +54,69 @@ export default function SensoryExperienceLanding() {
     handleResize();
     
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
-    controls.start(i => ({
-      x: Math.random() * 30 - 15,
-      y: Math.random() * 30 - 15,
-      rotate: Math.random() * 10 - 5,
-      transition: { repeat: Infinity, repeatType: "reverse", duration: 3 + i * 0.5 }
-    }))
-  }, [controls])
+    if (!mounted) return
+
+    controls.start(i => {
+      const { x, y, rotate } = randomValuesRef.current.positions[i] || { x: 0, y: 0, rotate: 0 };
+      return {
+        x,
+        y,
+        rotate,
+        transition: { repeat: Infinity, repeatType: "reverse", duration: 3 + i * 0.5 }
+      };
+    });
+  }, [controls, mounted]);
 
   const handleMouseEnter = useCallback(() => {
-    controls.start(i => ({
-      scale: 1.2,
-      rotate: Math.random() * 20 - 10,
-      transition: { type: "spring", stiffness: 300, damping: 10 }
-    }))
-  }, [controls])
+    if (!mounted) return
+    controls.start(i => {
+      const { scale, rotate } = randomValuesRef.current.hoverValues[i] || { scale: 1.2, rotate: 0 };
+      return {
+        scale,
+        rotate,
+        transition: { type: "spring", stiffness: 300, damping: 10 }
+      };
+    });
+  }, [controls, mounted]);
 
   const handleMouseLeave = useCallback(() => {
+    if (!mounted) return
     controls.start(i => ({
       scale: 1,
       rotate: 0,
       transition: { type: "spring", stiffness: 300, damping: 20 }
-    }))
-  }, [controls])
+    }));
+  }, [controls, mounted]);
+
+  if (!mounted) {
+    return (
+      <div className="flex flex-col h-screen overflow-hidden bg-background text-foreground">
+        <div className="flex-1 flex flex-col md:flex-row">
+          {[
+            { title: "Eyes", icon: Eye, href: "/art", type: "eye", bgColor: "#A5CFC7" },
+            { title: "Ears", icon: Ear, href: "/audio", type: "ear", bgColor: "#B55D44" }
+          ].map((item, index) => (
+            <div 
+              key={index} 
+              className="flex-1 relative overflow-hidden" 
+              style={{ backgroundColor: item.bgColor }}
+            >
+              <div className="absolute inset-0 z-60 flex flex-col items-center justify-center p-6 md:p-10">
+                <h2 className="text-3xl md:text-6xl font-bold mb-4 md:mb-8">
+                  {item.title}
+                </h2>
+                <div className="relative flex-1 w-full max-w-[80%] max-h-[60%] md:max-w-[70%] md:max-h-[70%]" />
+                <item.icon className="h-8 w-8 md:h-16 md:w-16 mt-4 md:mt-8" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background text-foreground">
@@ -141,7 +202,7 @@ export default function SensoryExperienceLanding() {
                         custom={i}
                         whileHover={{
                           scale: 1.3,
-                          rotate: Math.random() * 30 - 15,
+                          rotate: mounted ? randomValuesRef.current.hoverValues[i]?.rotate || 0 : 0,
                           transition: { type: "spring", stiffness: 300, damping: 10 }
                         }}
                         whileTap={{ scale: 0.9 }}
@@ -162,6 +223,7 @@ export default function SensoryExperienceLanding() {
                           width={size}
                           height={size}
                           className="w-auto h-auto md:w-full md:h-full pointer-events-none"
+                          style={{ color: "transparent" }}
                         />
                       </motion.div>
                     );

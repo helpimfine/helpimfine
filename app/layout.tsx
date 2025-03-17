@@ -7,6 +7,7 @@ import "./globals.css";
 import Footer from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import '@/app/globals.css'
+import { ColorProvider } from './context/color-context';
 
 const inter = Inter({ subsets: ["latin"] });
 const bebasNeue = Bebas_Neue({
@@ -45,17 +46,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <body className={`${inter.className} ${bebasNeue.variable}`}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="dark"
+            forcedTheme="dark"
             disableTransitionOnChange
           >
-            <div className="flex flex-col min-h-screen mx-auto">
-              <Header />
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </div>
+            <ColorProvider>
+              <div className="flex flex-col min-h-screen mx-auto">
+                <Header />
+                <main className="flex-grow">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </ColorProvider>
             <Toaster />
           </ThemeProvider>
           <Analytics />

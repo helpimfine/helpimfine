@@ -78,12 +78,23 @@ export const getArtworks = cache(async ({
   return { data, total };
 });
 
-// Cache the getArtwork query
+// Cache the getArtwork query (by id)
 export const getArtwork = cache(async (id: string) => {
   const artwork = await db.query.artworks.findFirst({
     where: eq(artworksTable.id, id)
   }).execute();
 
+  if (!artwork) {
+    throw new Error("Artwork not found");
+  }
+  return artwork;
+});
+
+// New function: getArtworkBySlug queries artwork by a slug derived from its title
+export const getArtworkBySlug = cache(async (slug: string) => {
+  const artwork = await db.query.artworks.findFirst({
+    where: sql`${sql.raw("LOWER(REPLACE(")}${artworksTable.title}${sql.raw(",' ','-'))")} = ${slug}`
+  }).execute();
   if (!artwork) {
     throw new Error("Artwork not found");
   }

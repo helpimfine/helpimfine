@@ -10,7 +10,7 @@ Help I'm Fine is a web application that allows me to manage and showcase my art 
 
 - Frontend: Next.js, Tailwind CSS, Shadcn UI, Framer Motion
 - Backend: Supabase, Drizzle ORM, Next.js Server Actions
-- Authentication: Clerk
+- Authentication: Supabase
 - AI Integration: OpenAI Vision model
 - Content Storage: Cloudinary
 - Database: PostgreSQL

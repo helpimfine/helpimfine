@@ -37,7 +37,6 @@ export const AudioCard: React.FC<AudioCardProps> = ({ audio }) => {
             width="100%"
             height="100%"
             frameBorder="0"
-            allowTransparency={true}
             allow="encrypted-media"
           ></iframe>
         ) : (

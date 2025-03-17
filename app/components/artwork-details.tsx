@@ -33,7 +33,7 @@ export default function ArtworkDetails({ artwork }: ArtworkDetailsProps) {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient();
+      const supabase = await createClient();
       const { data: { session } } = await supabase.auth.getSession();
       setIsLoggedIn(!!session);
     };

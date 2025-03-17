@@ -10,7 +10,7 @@ import { PaginationResult } from "@/types/actions/action-types";
 
 export async function createArtworkAction(artwork: InsertArt): Promise<SelectArt> {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -56,7 +56,7 @@ export async function getArtworksAction(
   editMode: boolean
 ): Promise<PaginationResult<SelectArt>> {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     const page = Number(searchParams.page) || 1;
@@ -136,7 +136,7 @@ export async function getRelatedArtworksAction(
   artworkType: 'human' | 'ai'
 ): Promise<SelectArt[]> {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     let whereConditions: SQL[] = [];

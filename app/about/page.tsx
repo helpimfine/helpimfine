@@ -3,9 +3,21 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { useColors } from "@/app/context/color-context"
+import { generateColorTones } from "@/utils/color-utils"
 
 export default function AboutPage() {
   const [isTabletOrMobile, setIsTabletOrMobile] = useState(false)
+  const { colorTones, lastViewedArtworkUrl } = useColors();
+
+  // Default colors if no artwork colors are set
+  const defaultColors = ['#D3D3D3', '#62757f', '#4B4B4B', '#8A9A5B'];
+  const defaultColorTones = defaultColors.map(color => generateColorTones(color));
+  const currentColorTones = colorTones || defaultColorTones;
+
+  // Default image if no artwork URL is set
+  const defaultImageUrl = "https://res.cloudinary.com/dsbsn3nap/image/upload/v1726000825/Lushuous_Landscape_ghgau1.png";
+  const currentImageUrl = lastViewedArtworkUrl || defaultImageUrl;
 
   useEffect(() => {
     const handleResize = () => {
@@ -39,10 +51,16 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div 
+      className="min-h-screen flex flex-col lg:flex-row transition-colors duration-300 ease-in-out"
+      style={{ 
+        backgroundColor: currentColorTones[1][5],
+        transition: 'background-color 300ms cubic-bezier(0.4, 0, 0.2, 1)'
+      }}
+    >
       <div className="lg:hidden w-full h-64 md:h-96 relative">
         <Image
-          src="https://res.cloudinary.com/dsbsn3nap/image/upload/v1726000825/Lushuous_Landscape_ghgau1.png"
+          src={currentImageUrl}
           alt="Background"
           fill
           style={{ objectFit: "cover" }}
@@ -51,14 +69,20 @@ export default function AboutPage() {
       </div>
       <div className="hidden lg:block w-1/2 h-screen relative">
         <Image
-          src="https://res.cloudinary.com/dsbsn3nap/image/upload/v1726000825/Lushuous_Landscape_ghgau1.png"
+          src={currentImageUrl}
           alt="Background"
           fill
           style={{ objectFit: "cover" }}
           priority
         />
       </div>
-      <div className="w-full lg:w-1/2 bg-background/80 backdrop-blur-sm p-4 md:p-8 pt-16 md:pt-24 lg:pt-32 overflow-y-auto max-h-screen lg:h-screen">
+      <div 
+        className="w-full lg:w-1/2 backdrop-blur-sm p-4 md:p-8 pt-16 md:pt-24 lg:pt-32 overflow-y-auto max-h-screen lg:h-screen"
+        style={{ 
+          backgroundColor: `${currentColorTones[1][5]}80`,
+          transition: 'background-color 300ms cubic-bezier(0.4, 0, 0.2, 1)'
+        }}
+      >
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -66,11 +90,11 @@ export default function AboutPage() {
           className="mx-auto relative"
         >
           <motion.div variants={itemVariants} className="mb-8 md:mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 text-primary">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6" style={{ color: currentColorTones[1][3] }}>
               About
             </h1>
-            <p className="text-lg md:text-2xl leading-relaxed text-secondary-foreground max-w-3xl text-pretty">
-              Help, I&apos;m fine. is a project exploring the intersection of <span className="font-semibold text-primary font-bebas-neue text-2xl md:text-3xl">digital collage</span> and <span className="font-semibold text-primary font-bebas-neue text-2xl md:text-3xl">artificial intelligence</span>. My creative process is built around two key steps:
+            <p className="text-lg md:text-2xl leading-relaxed max-w-3xl text-pretty" style={{ color: currentColorTones[1][2] }}>
+              Help, I&apos;m fine. is a project exploring the intersection of <span className="font-semibold font-bebas-neue text-2xl md:text-3xl" style={{ color: currentColorTones[1][2] }}>digital collage</span> and <span className="font-semibold font-bebas-neue text-2xl md:text-3xl" style={{ color: currentColorTones[1][2] }}>artificial intelligence</span>. My creative process is built around two key steps:
             </p>
           </motion.div>
 
@@ -82,6 +106,7 @@ export default function AboutPage() {
                 "I create playful collages by incorporating photographs captured while I'm out and about, with abstract shapes and colours.",
                 "Drawing inspiration from my surroundings, I integrate colour palettes, textures, and forms observed in my natural and urban environments."
               ]}
+              colorTones={currentColorTones}
             />
             <CoolProcessStep
               number="02"
@@ -90,23 +115,21 @@ export default function AboutPage() {
                 "The source collage serves as the creative foundation, working with the prompt to guide the generative AI to shape the final work's colour, composition, and overall aesthetic.",
                 "I carefully refine the prompts and curate the AI outputs, exploring multiple iterations to bring my artistic vision to life."
               ]}
+              colorTones={currentColorTones}
             />
           </div>
 
           <motion.div variants={itemVariants} className="mt-8 mb-28 md:mt-20">
-            <p className="text-lg md:text-2xl text-secondary-foreground max-w-3xl text-pretty">
+            <p className="text-lg md:text-2xl max-w-3xl text-pretty" style={{ color: currentColorTones[1][3] }}>
             The written descriptions of the artwork are generated by AI after I upload an image and provide some context. Alongside my visual art, I also curate playlists and sometimes create mixes, combining tracks to build distinct soundscapes.</p>    
-
           </motion.div>
-
         </motion.div>
-
       </div>
     </div>
   )
 }
 
-function CoolProcessStep({ number, title, description }: { number: string; title: string; description: string[] }) {
+function CoolProcessStep({ number, title, description, colorTones }: { number: string; title: string; description: string[]; colorTones: string[][] }) {
   const stepVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { 
@@ -134,17 +157,17 @@ function CoolProcessStep({ number, title, description }: { number: string; title
       className="grid grid-cols-1 sm:grid-cols-12 gap-2 md:gap-4 max-w-6xl"
     >
       <motion.div variants={itemVariants} className="sm:col-span-2">
-        <span className="text-6xl md:text-9xl font-black text-primary opacity-20 leading-none font-bebas-neue">
+        <span className="text-6xl md:text-9xl font-black leading-none font-bebas-neue" style={{ color: colorTones[1][2], opacity: 0.2 }}>
           {number}
         </span>
       </motion.div>
       <div className="sm:col-span-10">
-        <motion.h2 variants={itemVariants} className="text-2xl md:text-3xl mb-2 md:mb-4 text-primary">
+        <motion.h2 variants={itemVariants} className="text-2xl md:text-3xl mb-2 md:mb-4" style={{ color: colorTones[1][2] }}>
           {title}
         </motion.h2>
         <div className="space-y-2 md:space-y-4">
           {description.map((paragraph: string, index: number) => (
-            <motion.p key={index} variants={itemVariants} className="text-base md:text-2xl text-secondary-foreground text-pretty">
+            <motion.p key={index} variants={itemVariants} className="text-base md:text-2xl text-pretty" style={{ color: colorTones[1][2] }}>
               {paragraph}
             </motion.p>
           ))}

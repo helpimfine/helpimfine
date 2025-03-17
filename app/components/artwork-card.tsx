@@ -10,9 +10,10 @@ import { useCardSize } from "@/app/hooks/useCardSize";
 import { EditArtwork } from "@/app/components/edit-artwork";
 import { useRouter } from "next/navigation";
 import { updateArtworkAction } from "@/actions/artworks-actions";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useState, useCallback } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface Colour {
   hex: string;
@@ -131,6 +132,9 @@ export function ArtworkCard({ artwork, editMode, onEdit, cardSize }: ArtworkCard
               </Button>
             </DialogTrigger>
             <DialogContent className="p-0 border-none bg-transparent">
+              <VisuallyHidden>
+                <DialogTitle>Edit Artwork</DialogTitle>
+              </VisuallyHidden>
               <EditArtwork
                 artwork={artwork}
                 onSubmit={handleUpdateArtwork}

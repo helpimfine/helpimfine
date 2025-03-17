@@ -26,21 +26,22 @@ export function ImageUpload({ onUploadComplete }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient();
+  const [supabase, setSupabase] = useState<any>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function getUserId() {
-      const { data: { user } } = await supabase.auth.getUser();
+    async function initializeSupabase() {
+      const client = await createClient();
+      setSupabase(client);
+      
+      const { data: { user } } = await client.auth.getUser();
       if (user) {
         setUserId(user.id);
-      } else {
-        console.error('No authenticated user found');
-        // Handle the case where there's no authenticated user
       }
     }
-    getUserId();
-  }, [supabase.auth]);
+    
+    initializeSupabase();
+  }, []);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0 || !userId) return;

@@ -36,7 +36,10 @@ export function ArtworkGrid({
   return (
     <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {artworks.map((artwork) => (
-        <Link href={`/art/${artwork.id}`} key={artwork.id}>
+        <Link 
+          href={`/art/${artwork.title.toLowerCase().replace(/ /g, '-')}`} 
+          key={artwork.id}
+        >
           <ArtworkCard
             artwork={artwork}
             editMode={editMode}
