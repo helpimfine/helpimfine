@@ -8,13 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useColors } from "@/app/context/color-context";
+import { useSearchParams } from "next/navigation";
 
-export default function AudioPage({
-  searchParams,
-}: {
-  searchParams: { tags?: string };
-}) {
+export default function AudioPage() {
   const { colorTones } = useColors();
+  const searchParams = useSearchParams();
   const [audio, setAudio] = React.useState<{
     data: SelectAudio[],
     filteredData: SelectAudio[],
@@ -29,7 +27,7 @@ export default function AudioPage({
   
   React.useEffect(() => {
     // Parse the tags from URL (comma-separated string to array)
-    const selectedTags = searchParams.tags ? searchParams.tags.split(",") : [];
+    const selectedTags = searchParams.get('tags') ? searchParams.get('tags')!.split(",") : [];
     
     const fetchData = async () => {
       // Get all audios
@@ -65,7 +63,7 @@ export default function AudioPage({
     };
     
     fetchData();
-  }, [searchParams.tags]);
+  }, [searchParams]);
 
   // Container animation
   const containerVariants = {
