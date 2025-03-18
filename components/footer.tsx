@@ -7,8 +7,8 @@ export default function Footer() {
   const { colorTones } = useColors();
   const pathname = usePathname();
   
-  // Hide footer on homepage
-  if (pathname === '/') {
+  // Hide footer on homepage and about page
+  if (pathname === '/' || pathname === '/about') {
     return null;
   }
   
