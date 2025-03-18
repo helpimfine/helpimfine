@@ -32,6 +32,7 @@ export default function AboutPage() {
   const parallaxRotate = useTransform(scrollYProgress, [0, 1], [0, 5]);
   const parallaxBlur = useTransform(scrollYProgress, [0, 0.5, 1], [0, 2, 6]);
   const parallaxOpacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.8, 0.6]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0.3, 0.6]);
   
   // For mobile header parallax
   const mobileHeaderHeight = useTransform(
@@ -187,7 +188,7 @@ export default function AboutPage() {
           <motion.div 
             className="absolute inset-0 bg-black/30"
             style={{
-              opacity: useTransform(scrollYProgress, [0, 1], [0.3, 0.6])
+              opacity: overlayOpacity
             }}
           />
         </motion.div>
